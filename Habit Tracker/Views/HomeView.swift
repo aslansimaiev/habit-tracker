@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 struct HomeView: View {
     var body: some View {
         NavigationStack {
@@ -34,7 +35,7 @@ struct HomeView: View {
                         Text( "Task 1 ")
                         Text( "Task 2 ")
                         Text( "Task 3 ")
-
+                        
                     }
                     
                     //MARK: - Habit presets list
@@ -67,8 +68,11 @@ struct HomeView: View {
                         .fontWeight(.semibold)
                 }
             }
+            .background(Color.background)
             
         }
+        
+
     }
 }
 
