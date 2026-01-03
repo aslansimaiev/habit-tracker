@@ -9,6 +9,8 @@ import SwiftUI
 
 
 struct HomeView: View {
+    let habit: Habit
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -77,5 +79,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
+    HomeView(habit: .mock)
 }

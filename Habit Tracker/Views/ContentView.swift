@@ -70,7 +70,7 @@ struct ContentView: View {
     @State var index = 0
     
     var body: some View {
-        HomeView()
+        HomeView(habit: .mock)
             
         Spacer()
         
