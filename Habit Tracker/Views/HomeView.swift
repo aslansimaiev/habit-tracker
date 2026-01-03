@@ -8,9 +8,10 @@
 import SwiftUI
 
 
+
 struct HomeView: View {
     let habit: Habit
-
+    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -20,7 +21,43 @@ struct HomeView: View {
                         .fontWeight(.medium)
                         .foregroundStyle(.primary)
                     //MARK: - Current habit card
-                    Text("Here will be current habit card")
+                    VStack (alignment: .leading ){
+                        Text(habit.title)
+                            .foregroundStyle(.white)
+                        Text(habit.subtitle)
+                            .foregroundStyle(.white)
+                            .font(.caption)
+                            .padding(.bottom, 30)
+                        HStack {
+                            HabitProgressBar(progress: habit.progress)
+                                .frame(width: 50, height: 50)
+                                .onAppear()
+                                .padding(.trailing, 10)
+                            Text("\(String(habit.habitDaysLeft)) days left")
+                                .foregroundStyle(.white)
+                                .font(.caption)
+
+                            Spacer()
+                            Button {
+                                
+                            } label: {
+                                Text("See more")
+                                    .padding()
+                                    .background(.white)
+                                    .foregroundStyle(.htMain)
+                                    .clipShape(.capsule)
+                                    .font(.caption)
+                            }
+                            
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(Color(.htMain))
+                    )
+                    .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
                     
                     //MARK: - Today's task list
                     HStack {
@@ -74,7 +111,7 @@ struct HomeView: View {
             
         }
         
-
+        
     }
 }
 

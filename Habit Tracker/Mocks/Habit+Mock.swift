@@ -12,6 +12,7 @@ extension Habit {
     static let mock = Habit(
         id: UUID(),
         title: "Morning Workout",
+        subtitle: "Goal is to work out ",
         totalSessions: 20,
         daysOfWeek: [.monday, .tuesday, .wednesday, .thursday, .friday],
         status: .inProgress,
@@ -21,6 +22,8 @@ extension Habit {
     static let completedMock = Habit(
         id: UUID(),
         title: "Read 10 Pages",
+        subtitle: "Goal is to become smarter",
+
         totalSessions: 10,
         daysOfWeek: Set(Weekday.allCases),
         status: .completed,
@@ -33,6 +36,8 @@ extension Habit {
         Habit(
             id: UUID(),
             title: "Meditation",
+            subtitle: "Goal is to calm yourself",
+
             totalSessions: 30,
             daysOfWeek: [.saturday, .sunday],
             status: .inProgress,

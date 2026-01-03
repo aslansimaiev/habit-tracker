@@ -10,7 +10,7 @@ import Foundation
 struct Habit: Identifiable, Codable, Hashable {
     let id: UUID
     let title: String
-
+    let subtitle: String
     // Total number of required completions
     let totalSessions: Int
     // Days when the habit is active
@@ -26,6 +26,10 @@ struct Habit: Identifiable, Codable, Hashable {
     var progress: Double {
         guard totalSessions > 0 else { return 0 }
         return Double(completedCount) / Double(totalSessions)
+    }
+    
+    var habitDaysLeft: Int {
+        return totalSessions - completedCount
     }
 }
 
