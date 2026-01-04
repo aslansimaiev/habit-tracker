@@ -20,6 +20,7 @@ struct HomeView: View {
                         .font(.title2)
                         .fontWeight(.medium)
                         .foregroundStyle(.primary)
+                        .padding(.bottom)
                     //MARK: - Current habit card
                     VStack (alignment: .leading ){
                         Text(habit.title)
@@ -69,6 +70,7 @@ struct HomeView: View {
                             .font(.caption)
                             .foregroundStyle(.primary)
                     }
+                    .padding(.vertical)
                     LazyVStack {
                         // List of tasks
                         Text( "Task 1 ")

@@ -6,42 +6,57 @@
 //
 
 import Foundation
-
 extension Habit {
 
     static let mock = Habit(
         id: UUID(),
-        title: "Morning Workout",
-        subtitle: "Goal is to work out ",
-        totalSessions: 20,
+        title: "Morning Routine",
+        subtitle: "Goal to improve my morning routine",
+        
+        totalSessions: 15,
         daysOfWeek: [.monday, .tuesday, .wednesday, .thursday, .friday],
+        subtasks: [
+            Task.mock,
+            Task.completedMock,
+            Task(
+                id: UUID(),
+                title: "Write daily goals",
+                time: nil,
+                duration: nil,
+                status: .pending
+            )
+        ],
         status: .inProgress,
-        completedCount: 7
+        completedCount: 5
     )
 
     static let completedMock = Habit(
         id: UUID(),
-        title: "Read 10 Pages",
-        subtitle: "Goal is to become smarter",
-
-        totalSessions: 10,
+        title: "Evening Wind Down",
+        subtitle: "Goal to manage evening",
+        totalSessions: 8,
         daysOfWeek: Set(Weekday.allCases),
-        status: .completed,
-        completedCount: 10
+        subtasks: [
+            Task(
+                id: UUID(),
+                title: "Read a book",
+                time: nil,
+                duration: 1800,
+                status: .completed
+            ),
+            Task(
+                id: UUID(),
+                title: "Plan tomorrow",
+                time: nil,
+                duration: 600,
+                status: .completed
+            )
+        ],
+        status: .completed
     )
 
     static let mockList: [Habit] = [
         .mock,
-        .completedMock,
-        Habit(
-            id: UUID(),
-            title: "Meditation",
-            subtitle: "Goal is to calm yourself",
-
-            totalSessions: 30,
-            daysOfWeek: [.saturday, .sunday],
-            status: .inProgress,
-            completedCount: 3
-        )
+        .completedMock
     ]
 }
