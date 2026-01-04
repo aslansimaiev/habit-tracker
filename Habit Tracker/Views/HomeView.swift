@@ -11,7 +11,9 @@ import SwiftUI
 
 struct HomeView: View {
     let habit: Habit
-    
+    var tasks: Set<Task> {
+        return habit.subtasks
+    }
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -28,7 +30,12 @@ struct HomeView: View {
                         Text(habit.subtitle)
                             .foregroundStyle(.white)
                             .font(.caption)
-                            .padding(.bottom, 30)
+                            
+                        Text(habit.daysOfWeek.shortDayList)
+                            .font(.caption)
+                            .foregroundStyle(.white)
+                            .padding(.bottom, 25)
+                            
                         HStack {
                             HabitProgressBar(progress: habit.progress)
                                 .frame(width: 50, height: 50)
@@ -37,7 +44,7 @@ struct HomeView: View {
                             Text("\(String(habit.habitDaysLeft)) days left")
                                 .foregroundStyle(.white)
                                 .font(.caption)
-
+                            
                             Spacer()
                             Button {
                                 
@@ -52,7 +59,7 @@ struct HomeView: View {
                             
                         }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    
                     .padding()
                     .background(
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
@@ -71,11 +78,63 @@ struct HomeView: View {
                             .foregroundStyle(.primary)
                     }
                     .padding(.vertical)
-                    LazyVStack {
+                    VStack {
                         // List of tasks
-                        Text( "Task 1 ")
-                        Text( "Task 2 ")
-                        Text( "Task 3 ")
+                        ForEach(Array(tasks)) {task in
+                            if task.status == .pending {
+                                HStack{
+                                    VStack(alignment: .leading){
+                                        Text(task.title)
+                                        
+                                        if let time = task.time {
+                                            Text("at \(time,  format: .dateTime.hour().minute())")
+                                                .foregroundStyle(.secondary)
+                                                .font(.caption)
+                                        }
+                                        
+                                    }
+                                    Spacer()
+                                    Button {
+                                        
+                                    } label:  {
+                                        Text("Start")
+                                            .padding(EdgeInsets(top: 7, leading: 25, bottom: 7, trailing: 25))
+                                        
+                                            .background(.htMain)
+                                            .foregroundStyle(.white)
+                                            .clipShape(Capsule())
+                                    }
+                                    
+                                }
+                                .padding()
+                                .frame(maxWidth: .infinity, minHeight: 70)
+                                .background(.white)
+                                .clipShape(.rect(cornerRadius: 10))
+                            }
+                            else if task.status == .completed {
+                                HStack{
+                                    
+                                    VStack(alignment: .leading){
+                                        Text(task.title)
+                                        
+                                        if let time = task.time {
+                                            Text("at \(time,  format: .dateTime.hour().minute())")
+                                                .foregroundStyle(.secondary)
+                                                .font(.caption)
+                                        }
+                                        
+                                    }
+                                    Spacer()
+                                    Image("completedTask")
+                                    
+                                }
+                                .padding()
+                                .frame(maxWidth: .infinity, minHeight: 70)
+                                .background(Color("htCompletedColor"))
+                                .clipShape(.rect(cornerRadius: 10))
+                            }
+                            
+                        }
                         
                     }
                     
@@ -96,27 +155,30 @@ struct HomeView: View {
                             }
                         }
                     }
+                    Spacer()
                 }
                 .padding(.horizontal)
                 
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("Home")
-                        .font(.callout)
-                        .fontWeight(.semibold)
+                
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                
+                
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Text("Home")
+                            .font(.callout)
+                            .fontWeight(.semibold)
+                    }
                 }
+                
             }
-            .background(Color.background)
-            
+            .background(Color.htBackground)
+
         }
-        
-        
     }
 }
 
 #Preview {
+    
     HomeView(habit: .mock)
 }
