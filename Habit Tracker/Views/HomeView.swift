@@ -11,6 +11,7 @@ import SwiftUI
 
 struct HomeView: View {
     let habit: Habit
+
     var tasks: Set<Task> {
         return habit.subtasks
     }
@@ -143,6 +144,7 @@ struct HomeView: View {
                         Text("Habit Presets")
                             .font(.callout)
                             .fontWeight(.medium)
+                            .padding(.vertical)
                         Spacer()
                         NavigationLink("See All", destination: ContentView())
                             .font(.caption)
@@ -150,8 +152,9 @@ struct HomeView: View {
                     }
                     ScrollView(.horizontal) {
                         HStack {
-                            ForEach(1...100, id: \.self) { i in
-                                Text("Habit")
+                            ForEach(HabitPreset.mockList) { preset in
+                                HabitPresetCard(preset: preset)
+
                             }
                         }
                     }
