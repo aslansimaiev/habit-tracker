@@ -1,33 +1,47 @@
 //
-//  HomeView.swift
+//  StatisticsView.swift
 //  Habit Tracker
 //
-//  Created by NIL on 01.01.2026.
+//  Created by NIL on 06.01.2026.
 //
 
 import SwiftUI
 
-
-
-struct HomeView: View {
-    let habit: Habit = .mock
-
-    var tasks: Set<Task> {
-        return habit.subtasks
-    }
+struct StatisticsView: View {
+    
+    let habits = Habit.mockList
+    let tasks = Task.mockList
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading) {
-                    Text("Welcome")
-                        .font(.title2)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.primary)
-                        .padding(.bottom)
-                    //MARK: - Current habit card
-                    CurrentHabitCard(habit: habit)
                     
-                    //MARK: - Today's task list
+                    //MARK: - Total Stastistics
+                    HStack {
+                        VStack(spacing: 7){
+                            Text("Tasks Completed")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                
+                            Text("\(tasks.count) ")
+                                .font(.system(size: 24, weight: .medium))
+                        }
+                        .frame(minWidth: 170, minHeight: 95)
+                        .background(.white)
+                        .clipShape(.rect(cornerRadius: 10))
+                        Spacer()
+                        VStack(spacing: 7){
+                            Text("Habits Built")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text("\(habits.count) ")
+                                .font(.system(size: 24, weight: .medium))
+                        }
+                        .frame(minWidth: 170, minHeight: 95)
+                        .clipShape(.rect(cornerRadius: 10))
+                        .background(.white)
+                    }
+                    //MARK: - My Habit Records
                     HStack {
                         Text("Today's List")
                             .font(.callout)
@@ -40,9 +54,7 @@ struct HomeView: View {
                     .padding(.vertical)
                     VStack {
                         // List of tasks
-                        ForEach(Array(tasks)) {task in
-                            TaskRow(task: task)
-                        }
+
                     }
                     
                     //MARK: - Habit presets list
@@ -60,7 +72,7 @@ struct HomeView: View {
                         HStack {
                             ForEach(HabitPreset.mockList) { preset in
                                 HabitPresetCard(preset: preset)
-
+                                
                             }
                         }
                     }
@@ -70,7 +82,7 @@ struct HomeView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .toolbar {
                     ToolbarItem(placement: .principal) {
-                        Text("Home")
+                        Text("My Statistics")
                             .font(.callout)
                             .fontWeight(.semibold)
                     }
@@ -82,6 +94,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    
-    HomeView()
+    StatisticsView()
 }
