@@ -27,6 +27,9 @@ struct Habit: Identifiable, Codable, Hashable {
         guard totalSessions > 0 else { return 0 }
         return Double(completedCount) / Double(totalSessions)
     }
+    var progressPercentage: Int {
+        return Int(progress * 100)
+    }
     
     var habitDaysLeft: Int {
         return totalSessions - completedCount
