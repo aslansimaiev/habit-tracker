@@ -127,25 +127,19 @@ struct StatisticsView: View {
                     }
                     
                     
-                    //MARK: - Habit presets list
-                    HStack {
-                        Text("Habit Presets")
-                            .font(.callout)
-                            .fontWeight(.medium)
+                    //MARK: - Statistics ChartView
+                    
+                    HStack{
+                        Text("This Week’s Statistics")
                             .padding(.vertical)
+                            .fontWeight(.medium)
                         Spacer()
-                        NavigationLink("See All", destination: ContentView())
+                        Text("Weekly")
                             .font(.caption)
-                            .foregroundStyle(.primary)
+                        
                     }
-                    ScrollView(.horizontal) {
-                        HStack {
-                            ForEach(HabitPreset.mockList) { preset in
-                                HabitPresetCard(preset: preset)
-                                
-                            }
-                        }
-                    }
+                    .padding(.bottom, 50)
+                    StatisticsChartView()
                     Spacer()
                 }
                 .padding(.horizontal)
