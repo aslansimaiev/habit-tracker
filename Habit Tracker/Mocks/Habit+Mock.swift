@@ -11,21 +11,10 @@ extension Habit {
     static let mock = Habit(
         id: UUID(),
         title: "Morning Routine",
-        subtitle: "Goal to improve my morning routine",
-        
+        subtitle: "Improve my mornings",
         totalSessions: 15,
         daysOfWeek: [.monday, .tuesday, .wednesday, .thursday, .friday],
-        subtasks: [
-            Task.mock,
-            Task.completedMock,
-            Task(
-                id: UUID(),
-                title: "Write daily goals",
-                time: nil,
-                duration: nil,
-                status: .pending
-            )
-        ],
+        subtasks: HabitSubtaskTemplate.mockList,
         status: .inProgress,
         completedCount: 5
     )
@@ -33,26 +22,23 @@ extension Habit {
     static let completedMock = Habit(
         id: UUID(),
         title: "Evening Wind Down",
-        subtitle: "Goal to manage evening",
+        subtitle: "Relax before sleep",
         totalSessions: 8,
         daysOfWeek: Set(Weekday.allCases),
         subtasks: [
-            Task(
+            HabitSubtaskTemplate(
                 id: UUID(),
                 title: "Read a book",
-                time: nil,
-                duration: 1800,
-                status: .completed
+                duration: 1800
             ),
-            Task(
+            HabitSubtaskTemplate(
                 id: UUID(),
                 title: "Plan tomorrow",
-                time: nil,
-                duration: 600,
-                status: .completed
+                duration: 600
             )
         ],
-        status: .completed
+        status: .completed,
+        completedCount: 8
     )
 
     static let mockList: [Habit] = [

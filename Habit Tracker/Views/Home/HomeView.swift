@@ -7,67 +7,23 @@
 
 import SwiftUI
 
-
-
 struct HomeView: View {
     let habit: Habit = .mock
 
-    var tasks: Set<Task> {
-        return habit.subtasks
-    }
+    /// Temporary daily tasks (until SwiftData)
+    @State private var tasks: [Task] = []
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading) {
-                    Text("Welcome")
-                        .font(.title2)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.primary)
-                        .padding(.bottom)
-                    //MARK: - Current habit card
+                    header
                     CurrentHabitCard(habit: habit)
-                    
-                    //MARK: - Today's task list
-                    HStack {
-                        Text("Today's List")
-                            .font(.callout)
-                            .fontWeight(.medium)
-                        Spacer()
-                        NavigationLink("See All", destination: ContentView())
-                            .font(.caption)
-                            .foregroundStyle(.primary)
-                    }
-                    .padding(.vertical)
-                    VStack {
-                        // List of tasks
-                        ForEach(Array(tasks)) {task in
-                            TaskRow(task: task)
-                        }
-                    }
-                    
-                    //MARK: - Habit presets list
-                    HStack {
-                        Text("Habit Presets")
-                            .font(.callout)
-                            .fontWeight(.medium)
-                            .padding(.vertical)
-                        Spacer()
-                        NavigationLink("See All", destination: ContentView())
-                            .font(.caption)
-                            .foregroundStyle(.primary)
-                    }
-                    ScrollView(.horizontal) {
-                        HStack {
-                            ForEach(HabitPreset.mockList) { preset in
-                                HabitPresetCard(preset: preset)
-
-                            }
-                        }
-                    }
+                    todayList
+                    habitPresets
                     Spacer()
                 }
                 .padding(.horizontal)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .toolbar {
                     ToolbarItem(placement: .principal) {
                         Text("Home")
@@ -77,6 +33,78 @@ struct HomeView: View {
                 }
             }
             .background(Color.htBackground)
+            .onAppear {
+                generateTasksIfNeeded()
+            }
+        }
+    }
+    
+    private func generateTasksIfNeeded() {
+        guard tasks.isEmpty else { return }
+
+        tasks = habit.subtasks.map { template in
+            Task(
+                id: UUID(),
+                templateId: template.id,
+                status: .pending
+            )
+        }
+    }
+    private var todayList: some View {
+        VStack {
+            HStack {
+                Text("Today's List")
+                    .font(.callout)
+                    .fontWeight(.medium)
+
+                Spacer()
+
+                NavigationLink("See All", destination: ContentView())
+                    .font(.caption)
+                    .foregroundStyle(.primary)
+            }
+            .padding(.vertical)
+
+            VStack(spacing: 8) {
+                ForEach(tasks) { task in
+                    if let template = habit.subtasks.first(where: {
+                        $0.id == task.templateId
+                    }) {
+                        TaskRow(task: task, template: template)
+                    }
+                }
+            }
+        }
+    }
+    private var header: some View {
+        Text("Welcome")
+            .font(.title2)
+            .fontWeight(.medium)
+            .foregroundStyle(.primary)
+            .padding(.bottom)
+    }
+    private var habitPresets: some View {
+        VStack {
+            HStack {
+                Text("Habit Presets")
+                    .font(.callout)
+                    .fontWeight(.medium)
+                    .padding(.vertical)
+
+                Spacer()
+
+                NavigationLink("See All", destination: ContentView())
+                    .font(.caption)
+                    .foregroundStyle(.primary)
+            }
+
+            ScrollView(.horizontal) {
+                HStack {
+                    ForEach(HabitPreset.mockList) { preset in
+                        HabitPresetCard(preset: preset)
+                    }
+                }
+            }
         }
     }
 }

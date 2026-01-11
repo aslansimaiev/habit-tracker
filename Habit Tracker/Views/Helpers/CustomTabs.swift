@@ -6,64 +6,53 @@
 //
 
 import SwiftUI
-
 struct CustomTabs: View {
     @Binding var index: Int
+    @State private var showCreateHabit = false
+
     var body: some View {
         HStack {
-            Button {
-                self.index = 0
-            } label: {
-                Image( systemName: "house")
-                    .font(.system(size: 22))
-
-            }
-            .foregroundStyle(self.index == 0 ? .htMain : .secondary)
-            
-            Spacer(minLength: 0)
-            Button {
-                self.index = 1
-
-            } label: {
-                Image( systemName: "chart.bar")
-                    .font(.system(size: 22))
-
-            }
-            .foregroundStyle(self.index == 1 ? .htMain : .secondary)
+            tabButton(system: "house", tab: 0)
 
             Spacer(minLength: 0)
+
+            tabButton(system: "chart.bar", tab: 1)
+
+            Spacer(minLength: 0)
+
             Button {
-                
+                showCreateHabit = true
             } label: {
-                Image("addHabit").renderingMode(.original)
+                Image("addHabit")
+                    .renderingMode(.original)
             }
             .offset(y: -25)
-            Spacer(minLength: 0)
-
-            Button {
-                self.index = 2
-
-            } label: {
-                Image( systemName: "timer")
-                    .font(.system(size: 22))
-
-            }
-            .foregroundStyle(self.index == 2 ? .htMain : .secondary)
 
             Spacer(minLength: 0)
 
-            Button {
-                self.index = 3
+            tabButton(system: "timer", tab: 2)
 
-            } label: {
-                Image( systemName: "person.crop.circle")
-                    .font(.system(size: 22))
+            Spacer(minLength: 0)
 
-            }
-            .foregroundStyle(self.index == 3 ? .htMain : .secondary)
-
+            tabButton(system: "person.crop.circle", tab: 3)
         }
         .padding(.horizontal)
+        .sheet(isPresented: $showCreateHabit) {
+            NavigationStack {
+                CreateHabitView()
+            }
+        }
+    }
+
+    // MARK: - Reusable tab button
+    private func tabButton(system: String, tab: Int) -> some View {
+        Button {
+            index = tab
+        } label: {
+            Image(systemName: system)
+                .font(.system(size: 22))
+        }
+        .foregroundStyle(index == tab ? .htMain : .secondary)
     }
 }
 

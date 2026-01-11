@@ -9,14 +9,7 @@ import Foundation
 
 struct Task: Identifiable, Codable, Hashable {
     let id: UUID
-    let title: String
-
-    // Optional scheduled start time
-    var time: Date?
-
-    // Optional duration in seconds
-    var duration: TimeInterval?
-
+    let templateId: UUID
     var status: TaskStatus
 }
 

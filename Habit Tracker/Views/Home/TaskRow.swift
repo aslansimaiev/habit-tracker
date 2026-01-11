@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TaskRow: View {
     let task: Task
+    let template: HabitSubtaskTemplate
 
     var body: some View {
         HStack {
@@ -25,11 +26,12 @@ struct TaskRow: View {
     }
 
     private var taskInfo: some View {
-        VStack(alignment: .leading) {
-            Text(task.title)
+        VStack(alignment: .leading, spacing: 4) {
+            Text(template.title)
+                .font(.headline)
 
-            if let time = task.time {
-                Text("at \(time, format: .dateTime.hour().minute())")
+            if let duration = template.duration {
+                Text("\(Int(duration / 60)) min")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -41,27 +43,32 @@ struct TaskRow: View {
         switch task.status {
         case .pending:
             Button {
-                
-            } label:  {
+                // start timer / set inProgress
+            } label: {
                 Text("Start")
-                    .padding(EdgeInsets(top: 7, leading: 25, bottom: 7, trailing: 25))
-                
+                    .padding(.horizontal, 25)
+                    .padding(.vertical, 7)
                     .background(.htMain)
                     .foregroundStyle(.white)
                     .clipShape(Capsule())
             }
-            // TODO: - Change inProgress
-        case .completed, .inProgress:
+
+        case .inProgress:
+            ProgressView()
+                .progressViewStyle(.circular)
+
+        case .completed:
             Image("completedTask")
         }
-    
     }
 
     private var backgroundColor: Color {
-        task.status == .completed ? Color("htCompletedColor") : .white
+        task.status == .completed
+            ? Color("htCompletedColor")
+            : .white
     }
 }
 
 #Preview {
-    TaskRow(task: .mock)
+    TaskRow(task: .pending, template: .stretch)
 }

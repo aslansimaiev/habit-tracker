@@ -18,7 +18,6 @@ extension HabitPreset {
             daysOfWeek: [.monday, .wednesday, .friday],
             subtasks: [],
             status: .inProgress
-
         ),
         imageName: "preset_running"
     )

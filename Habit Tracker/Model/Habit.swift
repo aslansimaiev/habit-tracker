@@ -17,7 +17,7 @@ struct Habit: Identifiable, Codable, Hashable {
     let daysOfWeek: Set<Weekday>
     
     //let subtasks:
-    let subtasks: Set<Task>
+    let subtasks: [HabitSubtaskTemplate]
     //Overall habit lifecycle status
     let status: HabitStatus
     //Temporary Until task is implemented
