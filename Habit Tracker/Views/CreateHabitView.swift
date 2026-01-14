@@ -14,6 +14,7 @@ struct CreateHabitView: View {
     @State private var totalSessions = 15
     @State private var selectedDays: Set<Weekday> = []
     @State private var subtasks: [HabitSubtaskTemplate] = []
+    
     var body: some View {
         VStack{
             Text("Create new habit")
@@ -96,6 +97,8 @@ struct CreateHabitView: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
+                    .padding(.vertical)
+                    .foregroundStyle(.primary)
                 }
             }
             
