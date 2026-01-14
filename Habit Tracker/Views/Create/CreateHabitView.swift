@@ -10,7 +10,7 @@ import SwiftUI
 struct CreateHabitView: View {
     @State private var title: String = ""
     @State private var subTitle: String = ""
-
+    
     @State private var totalSessions = 15
     @State private var selectedDays: Set<Weekday> = []
     @State private var subtasks: [HabitSubtaskTemplate] = []
@@ -101,15 +101,6 @@ struct CreateHabitView: View {
                     .foregroundStyle(.primary)
                 }
             }
-            
-            
-            //            DatePicker(
-            //              "Time:",
-            //              selection: $time,
-            //              displayedComponents: [.hourAndMinute])
-            //              .padding(.bottom)
-            
-            
             .padding()
         }
         .frame(maxHeight: .infinity)
