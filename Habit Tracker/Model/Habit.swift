@@ -6,20 +6,21 @@
 //
 
 import Foundation
-
-struct Habit: Identifiable, Codable, Hashable {
-    let id: UUID
-    let title: String
-    let subtitle: String
+import SwiftData
+@Model
+class Habit: Identifiable, Hashable {
+    @Attribute(.unique) var id: UUID
+    var title: String
+    var subtitle: String
     // Total number of required completions
-    let totalSessions: Int
+    var totalSessions: Int
     // Days when the habit is active
-    let daysOfWeek: Set<Weekday>
+    var daysOfWeek: Set<Weekday>
     
     //let subtasks:
-    let subtasks: [HabitSubtaskTemplate]
+    @Relationship(deleteRule: .cascade) var subtasks: [HabitSubtaskTemplate]
     //Overall habit lifecycle status
-    let status: HabitStatus
+    var status: HabitStatus
     //Temporary Until task is implemented
     var completedCount: Int = 0
     //progress from 0.0 to 1.0
@@ -33,6 +34,17 @@ struct Habit: Identifiable, Codable, Hashable {
     
     var habitDaysLeft: Int {
         return totalSessions - completedCount
+    }
+    
+    init(id: UUID, title: String, subtitle: String, totalSessions: Int, daysOfWeek: Set<Weekday>, subtasks: [HabitSubtaskTemplate], status: HabitStatus, completedCount: Int = 0) {
+        self.id = id
+        self.title = title
+        self.subtitle = subtitle
+        self.totalSessions = totalSessions
+        self.daysOfWeek = daysOfWeek
+        self.subtasks = subtasks
+        self.status = status
+        self.completedCount = completedCount
     }
 }
 

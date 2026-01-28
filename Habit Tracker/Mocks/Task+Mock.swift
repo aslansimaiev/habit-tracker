@@ -10,19 +10,19 @@ extension Task {
 
     static let pending = Task(
         id: UUID(),
-        templateId: HabitSubtaskTemplate.stretch.id,
+        template: HabitSubtaskTemplate.stretch,
         status: .pending
     )
 
     static let inProgress = Task(
         id: UUID(),
-        templateId: HabitSubtaskTemplate.meditation.id,
+        template: HabitSubtaskTemplate.meditation,
         status: .inProgress
     )
 
     static let completed = Task(
         id: UUID(),
-        templateId: HabitSubtaskTemplate.water.id,
+        template: HabitSubtaskTemplate.water,
         status: .completed
     )
 

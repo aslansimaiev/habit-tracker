@@ -6,9 +6,15 @@
 //
 
 import Foundation
-
-struct HabitPreset: Identifiable, Codable, Hashable {
-    let id: UUID
-    let habit: Habit
-    let imageName: String
+import SwiftData
+@Model
+class HabitPreset: Identifiable, Hashable {
+    @Attribute(.unique) var id: UUID
+    @Relationship(deleteRule: .cascade) var habit: Habit
+    var imageName: String
+    init(id: UUID, habit: Habit, imageName: String) {
+        self.id = id
+        self.habit = habit
+        self.imageName = imageName
+    }
 }

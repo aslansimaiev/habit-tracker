@@ -6,15 +6,25 @@
 //
 
 import Foundation
-struct HabitDay: Identifiable, Codable, Hashable {
-    let id: UUID
+import SwiftData
+@Model
+class HabitDay: Identifiable, Hashable {
+    @Attribute(.unique) var id: UUID
 
     // Which habit this day belongs to
-    let habitId: UUID
+    @Relationship(deleteRule: .cascade) var habit: Habit
 
     // Calendar day
-    let date: Date
+    var date: Date
 
     // Tasks generated from subtask templates
     var tasks: [Task]
+    
+    
+    init(id: UUID, habit: Habit, date: Date, tasks: [Task]) {
+        self.id = id
+        self.habit = habit
+        self.date = date
+        self.tasks = tasks
+    }
 }

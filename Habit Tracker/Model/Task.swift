@@ -6,11 +6,17 @@
 //
 
 import Foundation
-
-struct Task: Identifiable, Codable, Hashable {
-    let id: UUID
-    let templateId: UUID
+import SwiftData
+@Model
+class Task: Identifiable, Hashable {
+    @Attribute(.unique) var id: UUID
+    @Relationship(deleteRule: .cascade) var template: HabitSubtaskTemplate
     var status: TaskStatus
+    init(id: UUID, template: HabitSubtaskTemplate, status: TaskStatus) {
+        self.id = id
+        self.template = template
+        self.status = status
+    }
 }
 
 enum TaskStatus: String, Codable {
