@@ -6,7 +6,7 @@
 //
 
 import Foundation
-extension Set where Element == Weekday {
+extension Array where Element == Weekday {
     
     var shortDayList: String {
         let allDays: [Weekday] = Weekday.allCases

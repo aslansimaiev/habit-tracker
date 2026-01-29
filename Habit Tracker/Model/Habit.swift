@@ -15,7 +15,7 @@ class Habit: Identifiable, Hashable {
     // Total number of required completions
     var totalSessions: Int
     // Days when the habit is active
-    var daysOfWeek: Set<Weekday>
+    var daysOfWeek: [Weekday]
     
     //let subtasks:
     @Relationship(deleteRule: .cascade) var subtasks: [HabitSubtaskTemplate]
@@ -36,7 +36,7 @@ class Habit: Identifiable, Hashable {
         return totalSessions - completedCount
     }
     
-    init(id: UUID, title: String, subtitle: String, totalSessions: Int, daysOfWeek: Set<Weekday>, subtasks: [HabitSubtaskTemplate], status: HabitStatus, completedCount: Int = 0) {
+    init(id: UUID = UUID(), title: String = "", subtitle: String = "", totalSessions: Int = 5, daysOfWeek: [Weekday] = [], subtasks: [HabitSubtaskTemplate] = [], status: HabitStatus = .inProgress, completedCount: Int = 0) {
         self.id = id
         self.title = title
         self.subtitle = subtitle

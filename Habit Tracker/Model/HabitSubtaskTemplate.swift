@@ -11,9 +11,10 @@ import SwiftData
 class HabitSubtaskTemplate: Identifiable, Hashable {
     @Attribute(.unique) var id: UUID
     var title: String
-
     // Timer duration (nil = no timer)
     var duration: TimeInterval?
+    
+    
     init(id: UUID, title: String, duration: TimeInterval? = nil) {
         self.id = id
         self.title = title

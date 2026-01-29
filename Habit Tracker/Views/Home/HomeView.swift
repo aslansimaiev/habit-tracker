@@ -6,9 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct HomeView: View {
-    let habit: Habit = .mock
+    @Query(sort: \Habit.title) var habits: [Habit] = []
+    var habit: Habit? {
+        return habits.first
+    }
 
     /// Temporary daily tasks (until SwiftData)
     @State private var tasks: [Task] = []
@@ -18,8 +22,22 @@ struct HomeView: View {
             ScrollView {
                 VStack(alignment: .leading) {
                     header
-                    CurrentHabitCard(habit: habit)
-                    todayList
+                    if let habit = habit {
+                        CurrentHabitCard(habit: habit)
+//                        todayList
+                    
+                    } else {
+                        ContentUnavailableView(label: {
+                            Label("No Habit currently developed", systemImage: "list.bullet.rectangle.portrait")
+                        }, description: {
+                            Text("Start adding habits to your profile.")
+                            Text("You can select one of the habits from the preset. or create your own")
+                        }, actions: {
+                            
+                        })
+                    }
+                    
+
                     habitPresets
                     Spacer()
                 }
@@ -34,48 +52,48 @@ struct HomeView: View {
             }
             .background(Color.htBackground)
             .onAppear {
-                generateTasksIfNeeded()
+//                generateTasksIfNeeded()
             }
         }
     }
     
-    private func generateTasksIfNeeded() {
-        guard tasks.isEmpty else { return }
-
-        tasks = habit.subtasks.map { template in
-            Task(
-                id: UUID(),
-                templateId: template.id,
-                status: .pending
-            )
-        }
-    }
-    private var todayList: some View {
-        VStack {
-            HStack {
-                Text("Today's List")
-                    .font(.callout)
-                    .fontWeight(.medium)
-
-                Spacer()
-
-                NavigationLink("See All", destination: ContentView())
-                    .font(.caption)
-                    .foregroundStyle(.primary)
-            }
-            .padding(.vertical)
-
-            VStack(spacing: 8) {
-                ForEach(tasks) { task in
-                    if let template = habit.subtasks.first(where: {
-                        $0.id == task.templateId
-                    }) {
-                        TaskRow(task: task, template: template)
-                    }
-                }
-            }
-        }
-    }
+//    private func generateTasksIfNeeded() {
+//        guard tasks.isEmpty else { return }
+//
+//        tasks = habit.subtasks.map { template in
+//            Task(
+//                id: UUID(),
+//                templateId: template.id,
+//                status: .pending
+//            )
+//        }
+//    }
+//    private var todayList: some View {
+//        VStack {
+//            HStack {
+//                Text("Today's List")
+//                    .font(.callout)
+//                    .fontWeight(.medium)
+//
+//                Spacer()
+//
+//                NavigationLink("See All", destination: ContentView())
+//                    .font(.caption)
+//                    .foregroundStyle(.primary)
+//            }
+//            .padding(.vertical)
+//
+//            VStack(spacing: 8) {
+//                ForEach(tasks) { task in
+//                    if let template = habit.subtasks.first(where: {
+//                        $0.id == task.templateId
+//                    }) {
+//                        TaskRow(task: task, template: template)
+//                    }
+//                }
+//            }
+//        }
+//    }
     private var header: some View {
         Text("Welcome")
             .font(.title2)

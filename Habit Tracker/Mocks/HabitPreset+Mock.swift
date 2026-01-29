@@ -43,7 +43,7 @@ extension HabitPreset {
             title: "Fitness",
             subtitle: "Strength & mobility",
             totalSessions: 6,
-            daysOfWeek: Set(Weekday.allCases),
+            daysOfWeek: Weekday.allCases,
             subtasks: [],
             status: .inProgress
         ),

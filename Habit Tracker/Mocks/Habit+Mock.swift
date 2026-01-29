@@ -24,7 +24,7 @@ extension Habit {
         title: "Evening Wind Down",
         subtitle: "Relax before sleep",
         totalSessions: 8,
-        daysOfWeek: Set(Weekday.allCases),
+        daysOfWeek: Weekday.allCases,
         subtasks: [
             HabitSubtaskTemplate(
                 id: UUID(),
