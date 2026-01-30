@@ -38,7 +38,10 @@ struct CustomTabs: View {
         }
         .padding(.horizontal)
         .sheet(isPresented: $showCreateHabit) {
-                CreateHabitView()
+                CreateHabitView(onFinish: {
+                    showCreateHabit = false
+                    index = 0
+                })
 
         }
     }

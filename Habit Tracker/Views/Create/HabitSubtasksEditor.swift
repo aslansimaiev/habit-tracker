@@ -13,6 +13,8 @@ struct HabitSubtasksEditor: View {
     @Bindable var habit: Habit
     @FocusState private var focusedSubtaskId: UUID?
     
+    let onFinish: () -> Void
+
     var body: some View {
         List {
             ForEach($habit.subtasks) { $subtask in
@@ -31,7 +33,7 @@ struct HabitSubtasksEditor: View {
                     context.insert(habit)
                     do {
                         try context.save()
-                        dismiss()
+                        onFinish()
                     } catch {
                         print("Failed to save habit:", error)
                     }
@@ -157,5 +159,8 @@ struct HabitSubtasksEditor: View {
 }
 
 #Preview {
-    HabitSubtasksEditor(habit: Habit())
+
+    HabitSubtasksEditor(habit: Habit(), onFinish: {
+        print("Preview: onFinish called")
+    })
 }

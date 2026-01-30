@@ -14,6 +14,8 @@ struct CreateHabitView: View {
     
     @State private var draft = Habit()
     
+    let onFinish: () -> Void
+
     
     var body: some View {
         NavigationStack {
@@ -89,7 +91,7 @@ struct CreateHabitView: View {
                     }
                     Section {
                         NavigationLink {
-                            HabitSubtasksEditor(habit: draft)
+                            HabitSubtasksEditor(habit: draft, onFinish: onFinish)
                         } label: {
                             Text("Add Subtasks")
                                 .frame(maxWidth: .infinity, maxHeight: 50)
@@ -128,5 +130,8 @@ struct CreateHabitView: View {
 
 
 #Preview {
-    CreateHabitView()
+
+    CreateHabitView(onFinish:{
+        print("Preview: onFinish called")
+    })
 }
