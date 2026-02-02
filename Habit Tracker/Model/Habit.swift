@@ -8,43 +8,36 @@
 import Foundation
 import SwiftData
 @Model
-class Habit: Identifiable, Hashable {
-    @Attribute(.unique) var id: UUID
+final class Habit {
+    // MARK: - Core data
     var title: String
     var subtitle: String
-    // Total number of required completions
     var totalSessions: Int
-    // Days when the habit is active
     var daysOfWeek: [Weekday]
     
-    //let subtasks:
-    @Relationship(deleteRule: .cascade) var subtasks: [HabitSubtaskTemplate]
-    //Overall habit lifecycle status
-    var status: HabitStatus
-    //Temporary Until task is implemented
+    var status: HabitStatus = HabitStatus.inProgress
     var completedCount: Int = 0
-    //progress from 0.0 to 1.0
-    var progress: Double {
-        guard totalSessions > 0 else { return 0 }
-        return Double(completedCount) / Double(totalSessions)
-    }
-    var progressPercentage: Int {
-        return Int(progress * 100)
-    }
+    var progressValue: Double = 0.0
+
+    // MARK: - Relationships
     
-    var habitDaysLeft: Int {
-        return totalSessions - completedCount
-    }
+    @Relationship(deleteRule: .cascade, inverse: \HabitSubtaskTemplate.habit)
+    var subtasks: [HabitSubtaskTemplate] = []
     
-    init(id: UUID = UUID(), title: String = "", subtitle: String = "", totalSessions: Int = 5, daysOfWeek: [Weekday] = [], subtasks: [HabitSubtaskTemplate] = [], status: HabitStatus = .inProgress, completedCount: Int = 0) {
-        self.id = id
+    @Relationship(deleteRule: .cascade, inverse: \TaskInstance.habit)
+    var taskInstances: [TaskInstance] = []
+    
+    // MARK: - Init
+    init(
+        title: String,
+        subtitle: String,
+        totalSessions: Int,
+        daysOfWeek: [Weekday]
+    ) {
         self.title = title
         self.subtitle = subtitle
         self.totalSessions = totalSessions
         self.daysOfWeek = daysOfWeek
-        self.subtasks = subtasks
-        self.status = status
-        self.completedCount = completedCount
     }
 }
 

@@ -8,16 +8,16 @@
 import SwiftUI
 import SwiftData
 @Model
-class HabitSubtaskTemplate: Identifiable, Hashable {
-    @Attribute(.unique) var id: UUID
+final class HabitSubtaskTemplate {
     var title: String
     // Timer duration (nil = no timer)
     var duration: TimeInterval?
+    @Relationship
+    var habit: Habit?
     
-    
-    init(id: UUID, title: String, duration: TimeInterval? = nil) {
-        self.id = id
+    init(title: String, duration: TimeInterval? = nil, habit: Habit? = nil) {
         self.title = title
         self.duration = duration
+        self.habit = habit
     }
 }

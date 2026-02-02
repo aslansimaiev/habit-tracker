@@ -7,28 +7,12 @@
 
 import Foundation
 extension HabitSubtaskTemplate {
-
-    static let stretch = HabitSubtaskTemplate(
-        id: UUID(),
-        title: "Morning stretch",
-        duration: 600 // 10 min
-    )
-
-    static let water = HabitSubtaskTemplate(
-        id: UUID(),
-        title: "Drink a glass of water",
-        duration: nil
-    )
-
-    static let meditation = HabitSubtaskTemplate(
-        id: UUID(),
-        title: "Meditation",
-        duration: 900 // 15 min
-    )
-
-    static let mockList: [HabitSubtaskTemplate] = [
-        .stretch,
-        .water,
-        .meditation
-    ]
+    
+    static func mock(title: String, duration: TimeInterval?, habit: Habit) -> HabitSubtaskTemplate {
+        HabitSubtaskTemplate(
+            title: title,
+            duration: duration,
+            habit: habit
+        )
+    }
 }

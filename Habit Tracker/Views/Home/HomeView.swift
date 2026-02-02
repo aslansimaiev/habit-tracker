@@ -9,13 +9,16 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
-    @Query(sort: \Habit.title) var habits: [Habit] = []
+    @Query(
+        filter: #Predicate {$0.progressValue != 1.0},
+        sort: [SortDescriptor(\Habit.progressValue, order: .reverse)],
+    )
+    var habits: [Habit]
+    
     var habit: Habit? {
         return habits.first
     }
-
-    /// Temporary daily tasks (until SwiftData)
-    @State private var tasks: [Task] = []
+    
 
     var body: some View {
         NavigationStack {
@@ -36,8 +39,7 @@ struct HomeView: View {
                             
                         })
                     }
-                    
-
+                
                     habitPresets
                     Spacer()
                 }
@@ -126,8 +128,35 @@ struct HomeView: View {
         }
     }
 }
-
 #Preview {
-    
-    HomeView()
+    {
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try! ModelContainer(
+            for: Habit.self,
+            HabitSubtaskTemplate.self,
+            TaskInstance.self,
+            WeekStat.self,
+            configurations: config
+        )
+        let context = container.mainContext
+
+        let morningHabit = Habit.mock()
+        context.insert(morningHabit)
+
+        let eveningHabit = Habit.mock()
+        eveningHabit.title = "Evening Wind Down"
+        eveningHabit.completedCount = 2
+        context.insert(eveningHabit)
+
+        let subtask = HabitSubtaskTemplate(
+            title: "Read book",
+            duration: 600,
+            habit: eveningHabit
+        )
+        context.insert(subtask)
+        eveningHabit.subtasks.append(subtask)
+
+        return HomeView()
+            .modelContainer(container)
+    }()
 }

@@ -32,9 +32,8 @@ struct HabitProgressBar: View {
 }
 
 #Preview {
-    let mock = Habit.mock
     
-    HabitProgressBar(progress: mock.progress)
+    HabitProgressBar(progress: 0.65)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(Color(.htMain))

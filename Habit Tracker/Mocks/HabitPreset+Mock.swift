@@ -7,52 +7,34 @@
 
 import Foundation
 extension HabitPreset {
-
-    static let running = HabitPreset(
-        id: UUID(),
-        habit: Habit(
-            id: UUID(),
-            title: "Running",
-            subtitle: "Build endurance",
-            totalSessions: 5,
-            daysOfWeek: [.monday, .wednesday, .friday],
-            subtasks: [],
-            status: .inProgress
-        ),
-        imageName: "preset_running"
+    
+    static let morningRoutine = HabitPreset(
+        title: "Morning Routine",
+        subtitle: "Start your day right",
+        imageName: "preset_morning",
+        totalSessions: 15,
+        daysOfWeek: [.monday, .tuesday, .wednesday, .thursday, .friday],
+        subtasks: [
+            HabitSubtaskPreset(title: "Drink water", duration: nil),
+            HabitSubtaskPreset(title: "Stretching", duration: 300),
+            HabitSubtaskPreset(title: "Meditation", duration: 600)
+        ]
     )
-
-    static let cardio = HabitPreset(
-        id: UUID(),
-        habit: Habit(
-            id: UUID(),
-            title: "Cardio",
-            subtitle: "Stay active",
-            totalSessions: 4,
-            daysOfWeek: [.tuesday, .thursday, .saturday],
-            subtasks: [],
-            status: .inProgress
-        ),
-        imageName: "preset_cardio"
+    
+    static let eveningWindDown = HabitPreset(
+        title: "Evening Wind Down",
+        subtitle: "Relax before sleep",
+        imageName: "preset_evening",
+        totalSessions: 8,
+        daysOfWeek: Weekday.allCases,
+        subtasks: [
+            HabitSubtaskPreset(title: "Read a book", duration: 1800),
+            HabitSubtaskPreset(title: "Plan tomorrow", duration: 600)
+        ]
     )
-
-    static let fitness = HabitPreset(
-        id: UUID(),
-        habit: Habit(
-            id: UUID(),
-            title: "Fitness",
-            subtitle: "Strength & mobility",
-            totalSessions: 6,
-            daysOfWeek: Weekday.allCases,
-            subtasks: [],
-            status: .inProgress
-        ),
-        imageName: "preset_fitness"
-    )
-
+    
     static let mockList: [HabitPreset] = [
-        .running,
-        .cardio,
-        .fitness
+        .morningRoutine,
+        .eveningWindDown
     ]
 }
