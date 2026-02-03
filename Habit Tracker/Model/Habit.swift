@@ -16,7 +16,11 @@ final class Habit {
     var daysOfWeek: [Weekday]
     
     var status: HabitStatus = HabitStatus.inProgress
-    var completedCount: Int = 0
+    var completedCount: Int = 0 {
+        didSet {
+            progressValue = totalSessions > 0 ? Double(completedCount) / Double(totalSessions) : 0
+        }
+    }
     var progressValue: Double = 0.0
 
     // MARK: - Relationships
