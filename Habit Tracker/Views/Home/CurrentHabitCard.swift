@@ -23,7 +23,7 @@ struct CurrentHabitCard: View {
                 .padding(.bottom, 25)
                 
             HStack {
-                HabitProgressBar(progress: habit.progress)
+                HabitProgressBar(progress: habit.progressValue)
                     .frame(width: 50, height: 50)
                     .onAppear()
                     .padding(.trailing, 10)
@@ -57,5 +57,5 @@ struct CurrentHabitCard: View {
 }
 
 #Preview {
-    CurrentHabitCard(habit: .mock)
+    CurrentHabitCard(habit: .mock())
 }

@@ -8,115 +8,130 @@
 import SwiftUI
 
 struct CreateHabitView: View {
-    @State private var title: String = ""
-    @State private var subTitle: String = ""
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var context
     
-    @State private var totalSessions = 15
-    @State private var selectedDays: Set<Weekday> = []
-    @State private var subtasks: [HabitSubtaskTemplate] = []
+    
+    @State private var draft = Habit(title: "", subtitle: "", totalSessions: 5, daysOfWeek: [])
+    
+    let onFinish: () -> Void
+
     
     var body: some View {
-        VStack{
-            Text("Create new habit")
-                .font(.callout)
-                .fontWeight(.semibold)
-            VStack(alignment: .leading) {
-                
-                Text("Set a Goal")
-                TextField("Eg. Make Mediation Daily Habit!", text: $title)
-                    .background(.white)
-                    .padding(12)
-                    .background(Color.white)
-                    .cornerRadius(8)
-                    .padding(.bottom)
-                Text("Set a subtitle (optional)")
-                    .font(.system(size: 14))
-                TextField("To feel better", text: $subTitle)
-                    .background(.white)
-                    .padding(8)
-                    .background(Color.white)
-                    .cornerRadius(8)
-                
-                HStack {
-                    Text("Total sessions")
-                    Stepper(value: $totalSessions, in: 3...100) {
-                        Text("\(totalSessions) days")
-                            .fontWeight(.medium)
-                    }
-                }
-                .padding(.vertical)
-                
-                //MARK: - Select Days
-                HStack {
-                    Text("Set Reminder")
-                        .font(.headline)
+        NavigationStack {
+            VStack {
+                Text("Create new habit")
+                    .font(.callout)
+                    .fontWeight(.semibold)
+                VStack(alignment: .leading) {
                     
-                    Spacer()
+                    Text("Set a Goal")
+                    TextField("Eg. Make Mediation Daily Habit!", text: $draft.title)
+                        .background(.white)
+                        .padding(12)
+                        .background(Color.white)
+                        .cornerRadius(8)
+                        .padding(.bottom)
+                    Text("Set a subtitle (optional)")
+                        .font(.system(size: 14))
+                    TextField("To feel better", text: $draft.subtitle)
+                        .background(.white)
+                        .padding(8)
+                        .background(Color.white)
+                        .cornerRadius(8)
                     
-                    Button("Clear") {
-                        selectedDays.removeAll()
-                    }
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                }
-                .padding(.vertical)
-                HStack (alignment: .center){
-                    ForEach(Weekday.allCases, id: \.self) { day in
-                        Button {
-                            toggle(day)
-                        } label: {
-                            Text(day.shortLetter)
-                                .font(.callout)
+                    HStack {
+                        Text("Total sessions")
+                        Stepper(value: $draft.totalSessions, in: 3...100) {
+                            Text("\(draft.totalSessions) days")
                                 .fontWeight(.medium)
-                                .frame(width: 40, height: 40)
-                                .background(
-                                    Circle()
-                                        .fill(
-                                            selectedDays.contains(day)
-                                            ? Color.htMain.opacity(0.6)
-                                            : Color.white.opacity(0.6)
-                                        )
-                                )
-                                .foregroundStyle(
-                                    selectedDays.contains(day)
-                                    ? .white
-                                    : .secondary
-                                )
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                Section {
-                    NavigationLink {
-                        HabitSubtasksEditor(subtasks: $subtasks)
-                    } label: {
-                        HStack {
-                            Text("Subtasks")
-                            Spacer()
-                            Text("\(subtasks.count)")
-                                .foregroundStyle(.secondary)
                         }
                     }
                     .padding(.vertical)
-                    .foregroundStyle(.primary)
+                    
+                    //MARK: - Select Days
+                    HStack {
+                        Text("Set Reminder")
+                            .font(.headline)
+                        
+                        Spacer()
+                        
+                        Button("Clear") {
+                            draft.daysOfWeek.removeAll()
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical)
+                    HStack (alignment: .center){
+                        ForEach(Weekday.allCases, id: \.self) { day in
+                            Button {
+                                toggle(day)
+                            } label: {
+                                Text(day.shortLetter)
+                                    .font(.callout)
+                                    .fontWeight(.medium)
+                                    .frame(width: 40, height: 40)
+                                    .background(
+                                        Circle()
+                                            .fill(
+                                                draft.daysOfWeek.contains(day)
+                                                ? Color.htMain.opacity(0.6)
+                                                : Color.white.opacity(0.6)
+                                            )
+                                    )
+                                    .foregroundStyle(
+                                        draft.daysOfWeek.contains(day)
+                                        ? .white
+                                        : .secondary
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    Section {
+                        NavigationLink {
+                            HabitSubtasksEditor(habit: draft, onFinish: onFinish)
+                        } label: {
+                            Text("Add Subtasks")
+                                .frame(maxWidth: .infinity, maxHeight: 50)
+                                .background(.htMain)
+                                .foregroundStyle(.white)
+                                .font(.callout.bold())
+                                .clipShape(.capsule)
+                        }
+                        .padding(.vertical)
+                        .foregroundStyle(.primary)
+                    }
+                }
+                .padding()
+            }
+            .frame(maxHeight: .infinity)
+            .background(.htBackground)
+            .toolbar(){
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
                 }
             }
-            .padding()
         }
-        .frame(maxHeight: .infinity)
-        .background(.htBackground)
+        
     }
     
     private func toggle(_ day: Weekday) {
-        if selectedDays.contains(day) {
-            selectedDays.remove(day)
+        if let index = draft.daysOfWeek.firstIndex(of: day) {
+            draft.daysOfWeek.remove(at: index)
         } else {
-            selectedDays.insert(day)
+            draft.daysOfWeek.append(day)
         }
     }
 }
 
 
 #Preview {
-    CreateHabitView()
+
+    CreateHabitView(onFinish:{
+        print("Preview: onFinish called")
+    })
 }

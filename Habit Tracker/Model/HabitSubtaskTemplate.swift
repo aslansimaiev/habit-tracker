@@ -6,10 +6,18 @@
 //
 
 import SwiftUI
-struct HabitSubtaskTemplate: Identifiable, Codable, Hashable {
-    let id: UUID
+import SwiftData
+@Model
+final class HabitSubtaskTemplate {
     var title: String
-
     // Timer duration (nil = no timer)
     var duration: TimeInterval?
+    @Relationship
+    var habit: Habit?
+    var id: UUID = UUID()
+    init(title: String, duration: TimeInterval? = nil, habit: Habit? = nil) {
+        self.title = title
+        self.duration = duration
+        self.habit = habit
+    }
 }

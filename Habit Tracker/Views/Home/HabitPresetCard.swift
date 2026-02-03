@@ -14,7 +14,7 @@ struct HabitPresetCard: View {
             Image(preset.imageName)
                 .resizable()
                 .frame(width: 130, height: 115)
-            Text(preset.habit.title)
+            Text(preset.title)
                 .padding(.bottom)
         }
         .background(.white)
@@ -24,5 +24,5 @@ struct HabitPresetCard: View {
 }
 
 #Preview {
-    HabitPresetCard(preset: .cardio)
+    HabitPresetCard(preset: .morningRoutine)
 }
