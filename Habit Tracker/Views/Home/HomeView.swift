@@ -10,7 +10,7 @@ import SwiftData
 
 struct HomeView: View {
     @Environment(\.modelContext) private var context
-
+    
     @Query(
         filter: #Predicate {$0.progressValue != 1.0},
         sort: [SortDescriptor(\Habit.progressValue, order: .reverse)],
@@ -23,18 +23,27 @@ struct HomeView: View {
             Calendar.current.isDateInToday($0.date)
         }
     }
-    var habit: Habit? {
-        return habits.first
-    }
+    
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading) {
                     header
-                    if let habit = habit {
-                        CurrentHabitCard(habit: habit)
+                    if !habits.isEmpty{
+                        GeometryReader { geo in
+                            
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack {
+                                    ForEach(habits, id: \.self) {h in
+                                        CurrentHabitCard(habit: h)
+                                            .frame(width: geo.size.width * 0.88)
+                                        
+                                    }
+                                }
+                            }
+                        }
+                        .frame(height: 200)
                         todayList
-                        //Text(todayTasks[0].template.title)
                     } else {
                         ContentUnavailableView(label: {
                             Label("No Habit currently developed", systemImage: "list.bullet.rectangle.portrait")
@@ -45,7 +54,7 @@ struct HomeView: View {
                             
                         })
                     }
-                
+                    
                     habitPresets
                     Spacer()
                 }
@@ -62,9 +71,6 @@ struct HomeView: View {
             .onAppear {
                 generateTasksIfNeeded()
             }
-//            .onChange(of: habits) { _, newHabits in
-//                generateTasksIfNeeded(habits: newHabits)
-//            }
         }
     }
     
@@ -100,26 +106,19 @@ struct HomeView: View {
                 Text("Today's List")
                     .font(.callout)
                     .fontWeight(.medium)
-
+                
                 Spacer()
-
+                
                 NavigationLink("See All", destination: ContentView())
                     .font(.caption)
                     .foregroundStyle(.primary)
             }
             .padding(.vertical)
-
+            
             VStack(spacing: 8) {
                 ForEach(todayTasks) { task in
                     TaskRow(task: task)
                 }
-//                ForEach(habits.taskInstances) { task in
-//                    if let template = habit.subtasks.first(where: {
-//                        $0.id == task.templateId
-//                    }) {
-//                        TaskRow(task: task, template: template)
-//                    }
-//                }
             }
         }
     }
@@ -137,14 +136,14 @@ struct HomeView: View {
                     .font(.callout)
                     .fontWeight(.medium)
                     .padding(.vertical)
-
+                
                 Spacer()
-
+                
                 NavigationLink("See All", destination: ContentView())
                     .font(.caption)
                     .foregroundStyle(.primary)
             }
-
+            
             ScrollView(.horizontal) {
                 HStack {
                     ForEach(HabitPreset.mockList) { preset in
@@ -166,17 +165,17 @@ struct HomeView: View {
             configurations: config
         )
         let context = container.mainContext
-
+        
         // Habit 1
         let morningHabit = Habit.mock()
         context.insert(morningHabit)
-
+        
         // Habit 2
         let eveningHabit = Habit.mock()
         eveningHabit.title = "Evening Wind Down"
         eveningHabit.completedCount = 2
         context.insert(eveningHabit)
-
+        
         // Subtask
         let subtask = HabitSubtaskTemplate(
             title: "Read book",
@@ -193,11 +192,11 @@ struct HomeView: View {
             template: subtask
         )
         task.status = .completed
-
+        
         eveningHabit.taskInstances.append(task)
-
+        
         context.insert(task)
-
+        
         return HomeView()
             .modelContainer(container)
     }()

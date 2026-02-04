@@ -72,7 +72,7 @@ struct TaskRow: View {
 }
 
 #Preview {
-    var task = TaskInstance(date: .now, habit: .mock(), template: .mock(title: "Brush the teeth", duration: 3, habit: .mock()))
+    let task = TaskInstance(date: .now, habit: .mock(), template: .mock(title: "Brush the teeth", duration: 3, habit: .mock()))
 //    task.status = .completed
     return TaskRow(task: task)
 }
