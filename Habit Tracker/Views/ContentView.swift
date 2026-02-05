@@ -15,7 +15,7 @@ struct ContentView: View {
             HomeView()
         }
         else if index == 1 {
-//            StatisticsView()
+            StatisticsView()
         }
         Spacer()
         

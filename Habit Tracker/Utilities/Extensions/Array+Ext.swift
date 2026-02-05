@@ -27,3 +27,18 @@ extension Array where Element == Weekday {
         return orderedShortNames.joined(separator: " • ")
     }
 }
+
+extension Array where Element == Habit {
+
+    func weekStats(for week: [Weekday]) -> [WeekStat] {
+        week.map { day in
+            let habitsForDay = self.filter { $0.daysOfWeek.contains(day) }
+
+            let subtasksCount = habitsForDay.reduce(0) { result, habit in
+                result + habit.subtasks.count
+            }
+
+            return WeekStat(day: day, value: subtasksCount)
+        }
+    }
+}

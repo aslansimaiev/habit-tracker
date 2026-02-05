@@ -6,15 +6,8 @@
 //
 
 import Foundation
-import SwiftData
-@Model
-class WeekStat: Identifiable {
-    var id = UUID()
-    var day: Weekday
-    var value: Int
-    init(id: UUID = UUID(), day: Weekday, value: Int) {
-        self.id = id
-        self.day = day
-        self.value = value
-    }
+struct WeekStat: Identifiable {
+    let id = UUID()
+    let day: Weekday
+    let value: Int
 }

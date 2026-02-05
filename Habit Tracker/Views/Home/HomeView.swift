@@ -161,7 +161,6 @@ struct HomeView: View {
             for: Habit.self,
             HabitSubtaskTemplate.self,
             TaskInstance.self,
-            WeekStat.self,
             configurations: config
         )
         let context = container.mainContext

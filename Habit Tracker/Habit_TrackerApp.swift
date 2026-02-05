@@ -14,7 +14,7 @@ struct Habit_TrackerApp: App {
         WindowGroup {
             ContentView()
                 .environment(\.colorScheme, .light) 
-                .modelContainer(for: [Habit.self, HabitSubtaskTemplate.self, TaskInstance.self, WeekStat.self])
+                .modelContainer(for: [Habit.self, HabitSubtaskTemplate.self, TaskInstance.self])
         }
     }
 }

@@ -16,6 +16,7 @@ final class Habit {
     var daysOfWeek: [Weekday]
     
     var status: HabitStatus = HabitStatus.inProgress
+    
     var completedCount: Int = 0 {
         didSet {
             progressValue = totalSessions > 0 ? Double(completedCount) / Double(totalSessions) : 0
@@ -45,16 +46,7 @@ final class Habit {
     }
 }
 
-//MARK: - Weekday to track when habit tasks should be completed.
-enum Weekday: Int, CaseIterable, Codable, Hashable {
-    case sunday = 1
-    case monday
-    case tuesday
-    case wednesday
-    case thursday
-    case friday
-    case saturday
-}
+
 
 
 //MARK: - Current status of habit completion
