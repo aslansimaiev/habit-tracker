@@ -16,7 +16,7 @@ extension Habit {
             totalSessions: 15,
             daysOfWeek: [.monday, .tuesday, .wednesday, .thursday, .friday]
         )
-        habit.completedCount = 5
+        
 
         // ⚠️ сабтаски добавляем ПОСЛЕ вставки Habit в context
         // habit.subtasks.append(...) делаем только после вставки в Preview

@@ -17,12 +17,17 @@ final class Habit {
     
     var status: HabitStatus = HabitStatus.inProgress
     
-    var completedCount: Int = 0 {
-        didSet {
-            progressValue = totalSessions > 0 ? Double(completedCount) / Double(totalSessions) : 0
-        }
+    @Transient var completedTasksCount: Int {
+        taskInstances.filter { $0.status == .completed }.count
     }
-    var progressValue: Double = 0.0
+
+    @Transient var progressValue: Double {
+        totalSessions > 0 ? Double(completedTasksCount) / Double(totalSessions) : 0
+    }
+
+    @Transient var progressPercentage: Int {
+        Int(progressValue * 100)
+    }
     
     // MARK: - Relationships
     

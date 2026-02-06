@@ -119,7 +119,6 @@ struct StatisticsView: View {
         // Habit 2
         let eveningHabit = Habit.mock()
         eveningHabit.title = "Evening Wind Down"
-        eveningHabit.completedCount = 2
         context.insert(eveningHabit)
         
         // Subtask

@@ -66,7 +66,7 @@ extension HabitRecordCard {
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(.white)
                 
-                Text("\(habit.completedCount)/\(habit.totalSessions) days")
+                Text("\(habit.completedTasksCount)/\(habit.totalSessions) days")
                     .foregroundStyle(.white)
                     .font(.caption)
             }

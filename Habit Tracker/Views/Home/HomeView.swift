@@ -11,13 +11,16 @@ import SwiftData
 struct HomeView: View {
     @Environment(\.modelContext) private var context
     
-    @Query(
-        filter: #Predicate {$0.progressValue != 1.0},
-        sort: [SortDescriptor(\Habit.progressValue, order: .reverse)],
-    )
-    var habits: [Habit]
-    
+    @Query(sort: [SortDescriptor(\Habit.title, order: .forward)])
+    private var habitsRaw: [Habit]
     @Query var tasks: [TaskInstance]
+
+    
+    private var habits: [Habit] {
+        habitsRaw
+            .filter { $0.completedTasksCount < $0.totalSessions }
+            .sorted { $0.progressValue > $1.progressValue }
+    }
     var todayTasks: [TaskInstance] {
         tasks.filter {
             Calendar.current.isDateInToday($0.date)
@@ -34,7 +37,7 @@ struct HomeView: View {
                             
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack {
-                                    ForEach(habits, id: \.self) {h in
+                                    ForEach(habits) {h in
                                         CurrentHabitCard(habit: h)
                                             .frame(width: geo.size.width * 0.88)
                                         
@@ -155,48 +158,6 @@ struct HomeView: View {
     }
 }
 #Preview {
-    {
-        let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        let container = try! ModelContainer(
-            for: Habit.self,
-            HabitSubtaskTemplate.self,
-            TaskInstance.self,
-            configurations: config
-        )
-        let context = container.mainContext
-        
-        // Habit 1
-        let morningHabit = Habit.mock()
-        context.insert(morningHabit)
-        
-        // Habit 2
-        let eveningHabit = Habit.mock()
-        eveningHabit.title = "Evening Wind Down"
-        eveningHabit.completedCount = 2
-        context.insert(eveningHabit)
-        
-        // Subtask
-        let subtask = HabitSubtaskTemplate(
-            title: "Read book",
-            duration: 600,
-            habit: eveningHabit
-        )
-        eveningHabit.subtasks.append(subtask)
-        context.insert(subtask)
-        
-        // Task
-        let task = TaskInstance(
-            date: Date(),
-            habit: eveningHabit,
-            template: subtask
-        )
-        task.status = .completed
-        
-        eveningHabit.taskInstances.append(task)
-        
-        context.insert(task)
-        
-        return HomeView()
-            .modelContainer(container)
-    }()
+    HomeView()
+        .withPreviewContainer()
 }
