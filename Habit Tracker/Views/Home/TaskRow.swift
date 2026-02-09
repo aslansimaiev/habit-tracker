@@ -61,6 +61,9 @@ struct TaskRow: View {
 
         case .completed:
             Image("completedTask")
+        default:
+            Text("TODO this in the future")
+            
         }
     }
 
