@@ -109,12 +109,6 @@ struct HomeView: View {
                 Text("Today's List")
                     .font(.callout)
                     .fontWeight(.medium)
-                
-                Spacer()
-                
-                NavigationLink("See All", destination: ContentView())
-                    .font(.caption)
-                    .foregroundStyle(.primary)
             }
             .padding(.vertical)
             
