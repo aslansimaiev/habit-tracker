@@ -12,11 +12,9 @@ struct CustomTabs: View {
 
     var body: some View {
         HStack {
-            tabButton(system: "house", tab: 0)
-
             Spacer(minLength: 0)
 
-            tabButton(system: "chart.bar", tab: 1)
+            tabButton(system: "house", tab: 0)
 
             Spacer(minLength: 0)
 
@@ -30,11 +28,9 @@ struct CustomTabs: View {
 
             Spacer(minLength: 0)
 
-            tabButton(system: "timer", tab: 2)
-
+            tabButton(system: "chart.bar", tab: 1)
             Spacer(minLength: 0)
 
-            tabButton(system: "person.crop.circle", tab: 3)
         }
         .padding(.horizontal)
         .sheet(isPresented: $showCreateHabit) {
