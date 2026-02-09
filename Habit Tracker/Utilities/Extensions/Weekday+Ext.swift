@@ -7,6 +7,9 @@
 
 import Foundation
 extension Weekday {
+    var chartIndex: Int {
+        rawValue - 1 
+    }
     var short: String {
         switch self {
         case .monday: return "Mon"
@@ -30,4 +33,10 @@ extension Weekday {
             case .sunday: return "S"
             }
         }
+    
+    static var today: Weekday {
+        let calendarWeekday = Calendar.current.component(.weekday, from: Date())
+        let mondayBased = ((calendarWeekday + 5) % 7) + 1
+        return Weekday(rawValue: mondayBased) ?? .monday
+    }
 }

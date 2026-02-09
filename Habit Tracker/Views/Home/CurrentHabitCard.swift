@@ -21,10 +21,14 @@ struct CurrentHabitCard: View {
                 .font(.caption)
                 .foregroundStyle(.white)
                 .padding(.bottom, 25)
-                
+            
             HStack {
-                HabitProgressBar(progress: habit.progressValue)
-                    .frame(width: 50, height: 50)
+                HabitProgressBar(
+                    progress: habit.progressValue,
+                    trackStyle: AnyShapeStyle(.white.opacity(0.25)),
+                    progressStyle: AnyShapeStyle(.white)
+                )
+                .frame(width: 50, height: 50)
                     .onAppear()
                     .padding(.trailing, 10)
                 Text("\(String(habit.habitDaysLeft)) days left")
@@ -32,8 +36,8 @@ struct CurrentHabitCard: View {
                     .font(.caption)
                 
                 Spacer()
-                Button {
-                    
+                NavigationLink {
+                    HabitListView()
                 } label: {
                     Text("See more")
                         .padding()

@@ -16,13 +16,19 @@ final class Habit {
     var daysOfWeek: [Weekday]
     
     var status: HabitStatus = HabitStatus.inProgress
-    var completedCount: Int = 0 {
-        didSet {
-            progressValue = totalSessions > 0 ? Double(completedCount) / Double(totalSessions) : 0
-        }
+    
+    @Transient var completedTasksCount: Int {
+        taskInstances.filter { $0.status == .completed }.count
     }
-    var progressValue: Double = 0.0
 
+    @Transient var progressValue: Double {
+        totalSessions > 0 ? Double(completedTasksCount) / Double(totalSessions) : 0
+    }
+
+    @Transient var progressPercentage: Int {
+        Int(progressValue * 100)
+    }
+    
     // MARK: - Relationships
     
     @Relationship(deleteRule: .cascade, inverse: \HabitSubtaskTemplate.habit)
@@ -45,16 +51,8 @@ final class Habit {
     }
 }
 
-//MARK: - Weekday to track when habit tasks should be completed.
-enum Weekday: Int, CaseIterable, Codable, Hashable {
-    case monday = 1
-    case tuesday
-    case wednesday
-    case thursday
-    case friday
-    case saturday
-    case sunday
-}
+
+
 
 //MARK: - Current status of habit completion
 enum HabitStatus: String, Codable {
