@@ -44,8 +44,8 @@ struct TaskRow: View {
     private var trailingContent: some View {
         switch task.status {
         case .pending:
-            Button {
-                // start timer / set inProgress
+            NavigationLink {
+                TaskTimerView(task: task)
             } label: {
                 Text("Start")
                     .padding(.horizontal, 25)
