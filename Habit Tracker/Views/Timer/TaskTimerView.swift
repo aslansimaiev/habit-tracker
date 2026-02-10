@@ -9,6 +9,8 @@
 import SwiftUI
 import SwiftData
 
+import SwiftUI
+import SwiftData
 
 struct TaskTimerView: View {
     @Environment(\.modelContext) private var context
@@ -20,34 +22,19 @@ struct TaskTimerView: View {
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 1)) { timeline in
-            let now = timeline.date
-            let elapsed = elapsedSeconds(now: now)
-            let remaining = remainingSeconds(elapsed: elapsed)
-            let progress = progressValue(elapsed: elapsed)
+            let snapshot = TimerSnapshot(task: task, now: timeline.date)
 
             VStack(spacing: 16) {
-
-                if task.status == .completed {
-                    completedContent
-                } else if task.hasTimer {
-                    timerContent(progress: progress, remaining: remaining)
-                } else {
-                    noTimerContent
-                }
-
+                content(snapshot: snapshot)
                 Spacer()
-
-                controls(remaining: remaining)
-
+                controls(snapshot: snapshot)
                 Spacer(minLength: 8)
             }
             .padding()
-            .onChange(of: remaining) { _, newValue in
+            .onChange(of: snapshot.remainingSecondsRounded) { _, newValue in
                 guard task.status == .inProgress, task.hasTimer else { return }
                 if newValue <= 0 {
-                    task.complete()
-                    SoundPlayer.playComplete()
-                    try? context.save()
+                    completeWithFeedback()
                 }
             }
         }
@@ -61,11 +48,27 @@ struct TaskTimerView: View {
             Text("This will reset elapsed time and return the task to Start.")
         }
     }
+}
 
+// MARK: - UI Sections
 
-    // MARK: - Content blocks
+private extension TaskTimerView {
+    @ViewBuilder
+    func content(snapshot: TimerSnapshot) -> some View {
+        switch task.status {
+        case .completed:
+            completedContent
 
-    private func timerContent(progress: Double, remaining: Double) -> some View {
+        default:
+            if task.hasTimer {
+                timerContent(progress: snapshot.progress, remaining: snapshot.remainingSeconds)
+            } else {
+                noTimerContent
+            }
+        }
+    }
+
+    func timerContent(progress: Double, remaining: Double) -> some View {
         VStack(spacing: 18) {
             ZStack {
                 TimerRing(progress: progress)
@@ -81,9 +84,8 @@ struct TaskTimerView: View {
         }
     }
 
-    private var noTimerContent: some View {
+    var noTimerContent: some View {
         VStack(spacing: 18) {
-            // “презентабельный” блок вместо кольца
             VStack(spacing: 10) {
                 Image(systemName: "checkmark.circle")
                     .font(.system(size: 44, weight: .semibold))
@@ -107,7 +109,7 @@ struct TaskTimerView: View {
         .padding(.top, 8)
     }
 
-    private var completedContent: some View {
+    var completedContent: some View {
         VStack(spacing: 18) {
             VStack(spacing: 10) {
                 Image(systemName: "checkmark.seal.fill")
@@ -116,6 +118,7 @@ struct TaskTimerView: View {
 
                 Text("Completed!")
                     .font(.title.bold())
+
                 Text("Nice work. You can go back to Home.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
@@ -126,15 +129,11 @@ struct TaskTimerView: View {
             .background(.ultraThinMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 18))
 
-            Button {
+            CapsuleButton(
+                title: "Back to Home",
+                style: .filled
+            ) {
                 dismiss()
-            } label: {
-                Text("Back to Home")
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(Color.htMain)
-                    .foregroundStyle(.white)
-                    .clipShape(Capsule())
             }
 
             taskInfo
@@ -142,7 +141,7 @@ struct TaskTimerView: View {
         .padding(.top, 8)
     }
 
-    private var taskInfo: some View {
+    var taskInfo: some View {
         VStack(spacing: 8) {
             if let minutesText = minutesText {
                 Text(minutesText)
@@ -162,112 +161,74 @@ struct TaskTimerView: View {
         }
         .padding(.top, 4)
     }
+}
 
-    // MARK: - Controls
+// MARK: - Controls
 
+private extension TaskTimerView {
     @ViewBuilder
-    private func controls(remaining: Double) -> some View {
+    func controls(snapshot: TimerSnapshot) -> some View {
         switch task.status {
         case .pending:
             if task.hasTimer {
-                primaryButton("Start") {
+                CapsuleButton(title: "Start", style: .filled) {
                     task.start()
                     try? context.save()
                 }
             } else {
-
-                primaryButton("Complete") {
-                    task.complete()
-                    SoundPlayer.playComplete()
-                    try? context.save()
+                CapsuleButton(title: "Complete", style: .filled) {
+                    completeWithFeedback()
                 }
             }
 
         case .inProgress:
             HStack(spacing: 12) {
-                primaryButton("Pause") {
+                CapsuleButton(title: "Pause", style: .filled) {
                     task.pause()
                     try? context.save()
                 }
-                secondaryButton("Complete") {
-                    task.complete()
-                    SoundPlayer.playComplete()
-                    try? context.save()
+                CapsuleButton(title: "Complete", style: .outlined) {
+                    completeWithFeedback()
                 }
             }
 
         case .paused:
             HStack(spacing: 12) {
-                secondaryButton("Cancel") {
+                CapsuleButton(title: "Cancel", style: .outlined) {
                     showCancelAlert = true
                 }
-                primaryButton("Continue") {
+                CapsuleButton(title: "Continue", style: .filled) {
                     task.start()
                     try? context.save()
                 }
             }
 
         case .completed:
-            // Кнопка уже в completedContent
             EmptyView()
         }
     }
 
-    // MARK: - Time math
-
-    private func elapsedSeconds(now: Date) -> Double {
-        let running = task.startedAt.map { now.timeIntervalSince($0) } ?? 0
-        return task.accumulatedSeconds + max(0, running)
+    func completeWithFeedback() {
+        task.complete()
+        SoundPlayer.playComplete()
+        try? context.save()
     }
+}
 
-    private func remainingSeconds(elapsed: Double) -> Double {
-        guard let target = task.targetSeconds else { return 0 }
-        return max(0, target - elapsed)
-    }
+// MARK: - Formatting
 
-    private func progressValue(elapsed: Double) -> Double {
-        guard let target = task.targetSeconds, target > 0 else { return 0 }
-        return min(1, elapsed / target)
-    }
-
-    private var minutesText: String? {
+private extension TaskTimerView {
+    var minutesText: String? {
         guard let target = task.targetSeconds, target > 0 else { return nil }
         return "\(Int(target / 60)) minutes"
     }
 
-    private func timeString(_ seconds: Double) -> String {
+    func timeString(_ seconds: Double) -> String {
         let total = max(0, Int(seconds.rounded(.down)))
         let h = total / 3600
         let m = (total % 3600) / 60
         let s = total % 60
         return String(format: "%02d:%02d:%02d", h, m, s)
-    }
-
-    // MARK: - Buttons
-
-    private func primaryButton(_ title: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(title)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
-                .background(Color.htMain)
-                .foregroundStyle(.white)
-                .clipShape(Capsule())
-        }
-    }
-
-    private func secondaryButton(_ title: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(title)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
-                .background(.clear)
-                .foregroundStyle(Color.htMain)
-                .overlay(
-                    Capsule()
-                        .stroke(Color.htMain.opacity(0.6), lineWidth: 1)
-                )
-        }
     }
 }
 
