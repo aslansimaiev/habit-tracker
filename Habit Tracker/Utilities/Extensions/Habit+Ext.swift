@@ -8,13 +8,13 @@ import Foundation
 extension Habit {    
     
     var habitDaysLeft: Int {
-        totalSessions - completedTasksCount
+        max(0, totalSessions - completedDaysCount)
     }
     
     
     func hasTask(for date: Date, template: HabitSubtaskTemplate) -> Bool {
         taskInstances.contains {
-            $0.date == date && $0.template == template
+            Calendar.current.isDate($0.date, inSameDayAs: date) && $0.template == template
         }
     }
 }

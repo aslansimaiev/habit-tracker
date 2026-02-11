@@ -20,14 +20,25 @@ final class Habit {
     @Transient var completedTasksCount: Int {
         taskInstances.filter { $0.status == .completed }.count
     }
+    
+    @Transient var completedDaysCount: Int {
+        let calendar = Calendar.current
 
+        let completedDates = taskInstances
+            .filter { $0.status == .completed }
+            .map { calendar.startOfDay(for: $0.date) }
+
+        return Set(completedDates).count
+    }
     @Transient var progressValue: Double {
-        totalSessions > 0 ? Double(completedTasksCount) / Double(totalSessions) : 0
+        totalSessions > 0 ? Double(completedDaysCount) / Double(totalSessions) : 0
     }
 
     @Transient var progressPercentage: Int {
         Int(progressValue * 100)
     }
+
+
     
     // MARK: - Relationships
     
@@ -36,6 +47,8 @@ final class Habit {
     
     @Relationship(deleteRule: .cascade, inverse: \TaskInstance.habit)
     var taskInstances: [TaskInstance] = []
+    
+    
     
     // MARK: - Init
     init(
