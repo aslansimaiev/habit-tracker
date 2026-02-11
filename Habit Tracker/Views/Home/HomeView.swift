@@ -14,7 +14,9 @@ struct HomeView: View {
     @Query(sort: [SortDescriptor(\Habit.title, order: .forward)])
     private var habitsRaw: [Habit]
     @Query var tasks: [TaskInstance]
-
+    
+    @State private var selectedPreset: HabitPreset?
+    @State private var showPresetSheet = false
     
     private var habits: [Habit] {
         habitsRaw
@@ -144,7 +146,17 @@ struct HomeView: View {
             ScrollView(.horizontal) {
                 HStack {
                     ForEach(HabitPreset.mockList) { preset in
-                        HabitPresetCard(preset: preset)
+                        HabitPresetCard(preset: preset) {
+                            selectedPreset = preset
+                            showPresetSheet = true
+                        }
+                    }
+                    .sheet(isPresented: $showPresetSheet) {
+                        if let selectedPreset {
+                            CreateHabitView(draft: selectedPreset.makeDraftHabit()) {
+                                showPresetSheet = false
+                            }
+                        }
                     }
                 }
             }
