@@ -113,12 +113,31 @@ struct HabitSubtasksEditor: View {
     //MARK: - When new habit is submitted. Need to create Habit, and tasks
     func saveHabit() {
         context.insert(habit)
-        
+
+        // generate today tasks after habit creation
+        generateTodayTasks(for: habit)
+
         do {
             try context.save()
             onFinish()
         } catch {
             print("Failed to save habit:", error)
+        }
+    }
+
+    private func generateTodayTasks(for habit: Habit) {
+        let today = Calendar.current.startOfDay(for: .now)
+
+        let calWeekday = Calendar.current.component(.weekday, from: .now) // 1=Sun
+        let isoIndex = (calWeekday + 5) % 7 + 1 // 1=Mon ... 7=Sun
+        guard let todayWeekday = Weekday(rawValue: isoIndex) else { return }
+
+        guard habit.daysOfWeek.contains(todayWeekday) else { return }
+
+        for subtask in habit.subtasks {
+            if !habit.hasTask(for: today, template: subtask) {
+                context.insert(TaskInstance(date: today, habit: habit, template: subtask))
+            }
         }
     }
     
