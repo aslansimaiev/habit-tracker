@@ -10,9 +10,9 @@ import SwiftUI
 struct CreateHabitView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
+    @FocusState private var isInputFocused: Bool
     
-    
-    @State private var draft = Habit(title: "", subtitle: "", totalSessions: 5, daysOfWeek: [])
+    @State private var draft = Habit(title: "", subtitle: "", totalSessions: 15, daysOfWeek: [])
     
     let onFinish: () -> Void
 
@@ -27,6 +27,7 @@ struct CreateHabitView: View {
                     
                     Text("Set a Goal")
                     TextField("Eg. Make Mediation Daily Habit!", text: $draft.title)
+                        .focused($isInputFocused)
                         .background(.white)
                         .padding(12)
                         .background(Color.white)
@@ -39,6 +40,7 @@ struct CreateHabitView: View {
                         .padding(8)
                         .background(Color.white)
                         .cornerRadius(8)
+                        .focused($isInputFocused)
                     
                     HStack {
                         Text("Total sessions")
@@ -108,6 +110,10 @@ struct CreateHabitView: View {
             }
             .frame(maxHeight: .infinity)
             .background(.htBackground)
+            .contentShape(Rectangle()) 
+            .onTapGesture {
+                isInputFocused = false
+            }
             .toolbar(){
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {

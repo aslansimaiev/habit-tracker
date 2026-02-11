@@ -11,8 +11,12 @@ struct HabitSubtasksEditor: View {
     @Environment(\.modelContext) var context
     @Environment(\.dismiss) var dismiss
     @Bindable var habit: Habit
-    @FocusState private var focusedSubtaskId: UUID?
-    
+    @FocusState private var focus: Field?
+
+    private enum Field: Hashable {
+        case title(UUID)
+        case minutes(UUID)
+    }
     let onFinish: () -> Void
 
     var body: some View {
@@ -26,14 +30,16 @@ struct HabitSubtasksEditor: View {
             
             addButton
         }
+        .scrollDismissesKeyboard(.interactively)
         .navigationTitle("Subtasks")
-        .toolbar(){
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Save") {
-                    saveHabit()
-                }
+        
+        .toolbar {
+            ToolbarItem(placement: .keyboard) {
+                Button("Done") { focus = nil }
             }
-            
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Save") { saveHabit() }
+            }
         }
     }
     
@@ -45,7 +51,7 @@ struct HabitSubtasksEditor: View {
                 TextField("Subtask title", text: subtask.title)
                     .font(.headline)
                     .textFieldStyle(.plain)
-                    .focused($focusedSubtaskId, equals: subtask.id.wrappedValue)
+                    .focused($focus, equals: .title(subtask.id.wrappedValue))
                     .padding(.vertical, 8)
                 
                 Spacer()
@@ -60,9 +66,11 @@ struct HabitSubtasksEditor: View {
                             ),
                             format: .number
                         )
+                        .focused($focus, equals: .minutes(subtask.id.wrappedValue))
                         .frame(width: 50)
                         .multilineTextAlignment(.trailing)
                         .keyboardType(.numberPad)
+
                         Text("min")
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -70,6 +78,7 @@ struct HabitSubtasksEditor: View {
                 } else {
                     Button {
                         subtask.duration.wrappedValue = 300
+                        focus = .minutes(subtask.id.wrappedValue)
                     } label: {
                         Text("Add timer")
                             .font(.caption)
@@ -104,7 +113,7 @@ struct HabitSubtasksEditor: View {
             
             habit.subtasks.append(newSubtask)
             
-            focusedSubtaskId = newSubtask.id
+            focus = .title(newSubtask.id)
         } label: {
             Label("Add subtask", systemImage: "plus")
         }
