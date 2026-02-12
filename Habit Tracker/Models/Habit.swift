@@ -7,6 +7,13 @@
 
 import Foundation
 import SwiftData
+
+//MARK: - Current status of habit completion
+enum HabitStatus: String, Codable {
+    case inProgress
+    case completed
+}
+
 @Model
 final class Habit {
     // MARK: - Core data
@@ -67,8 +74,4 @@ final class Habit {
 
 
 
-//MARK: - Current status of habit completion
-enum HabitStatus: String, Codable {
-    case inProgress
-    case completed
-}
+

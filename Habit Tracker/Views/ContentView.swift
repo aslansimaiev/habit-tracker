@@ -6,20 +6,25 @@
 //
 
 import SwiftUI
-
 struct ContentView: View {
-    @State var index = 0
-    
+    @State private var index: Int = 0
+
     var body: some View {
-        if index == 0 {
-            HomeView()
+        VStack(spacing: 0) {
+            Group {
+                if index == 0 {
+                    HomeView()
+                } else if index == 1 {
+                    StatisticsView()
+                } else {
+                    HomeView()
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            CustomTabs(index: $index)
         }
-        else if index == 1 {
-            StatisticsView()
-        }
-        Spacer()
-        
-        CustomTabs(index: self.$index)
+        .background(Color.htBackground)
     }
 }
 

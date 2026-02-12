@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
-
 struct HabitRecordCard: View {
     let habit: Habit
-    
+
+    private var isCompleted: Bool {
+        habit.totalSessions > 0 && habit.completedDaysCount >= habit.totalSessions
+    }
+
     var body: some View {
-        if habit.progressValue == 1.0 {
+        if isCompleted {
             completedCard
         } else {
             inProgressCard
@@ -20,19 +23,19 @@ struct HabitRecordCard: View {
 }
 
 extension HabitRecordCard {
-    
+
     private var completedCard: some View {
         VStack(alignment: .leading) {
             Text("100%")
                 .font(.title2)
                 .fontWeight(.medium)
-            
+
             Spacer()
-            
+
             VStack(alignment: .leading) {
                 Text(habit.title)
                     .font(.system(size: 12, weight: .semibold))
-                
+
                 Text("100% Complete")
                     .foregroundStyle(.secondary)
                     .font(.caption)
@@ -40,7 +43,7 @@ extension HabitRecordCard {
         }
         .cardStyle(color: .htStatisticsCompleted)
     }
-    
+
     private var inProgressCard: some View {
         VStack(alignment: .leading) {
             HStack {
@@ -48,9 +51,9 @@ extension HabitRecordCard {
                     .font(.title2)
                     .fontWeight(.medium)
                     .foregroundStyle(.white)
-                
+
                 Spacer()
-                
+
                 Text("In Progress")
                     .padding(8)
                     .font(.caption)
@@ -58,15 +61,15 @@ extension HabitRecordCard {
                     .foregroundStyle(.htMain)
                     .clipShape(.capsule)
             }
-            
+
             Spacer()
-            
+
             VStack(alignment: .leading) {
                 Text(habit.title)
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(.white)
-                
-                Text("\(habit.completedTasksCount)/\(habit.totalSessions) days")
+
+                Text("\(habit.completedDaysCount)/\(habit.totalSessions) days")
                     .foregroundStyle(.white)
                     .font(.caption)
             }

@@ -4,9 +4,9 @@
 //
 //  Created by NIL on 10.01.2026.
 //
-
-import SwiftUI
+import Foundation
 import SwiftData
+
 @Model
 final class HabitSubtaskTemplate {
     var title: String

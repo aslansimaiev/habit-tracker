@@ -9,7 +9,8 @@ import SwiftUI
 import SwiftData
 
 enum PreviewSupport {
-    static func makeContainer() -> ModelContainer {
+
+    static let container: ModelContainer = {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
 
         let container = try! ModelContainer(
@@ -21,9 +22,13 @@ enum PreviewSupport {
 
         seed(into: container.mainContext)
         return container
-    }
+    }()
 
     static func seed(into context: ModelContext) {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: .now)
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: today)!
+
         // Habit 1
         let morningHabit = Habit.mock()
         context.insert(morningHabit)
@@ -42,20 +47,22 @@ enum PreviewSupport {
         eveningHabit.subtasks.append(subtask)
         context.insert(subtask)
 
-        // Task
-        let task = TaskInstance(
-            date: Date(),
-            habit: eveningHabit,
-            template: subtask
-        )
-        task.status = .completed
-        eveningHabit.taskInstances.append(task)
-        context.insert(task)
+        //  Task today (completed)
+        let taskToday = TaskInstance(date: today, habit: eveningHabit, template: subtask)
+        taskToday.status = .completed
+        context.insert(taskToday)
+
+        //  Task yesterday (completed)
+        let taskYesterday = TaskInstance(date: yesterday, habit: eveningHabit, template: subtask)
+        taskYesterday.status = .completed
+        context.insert(taskYesterday)
+
+        try? context.save()
     }
 }
 
 extension View {
     func withPreviewContainer() -> some View {
-        self.modelContainer(PreviewSupport.makeContainer())
+        self.modelContainer(PreviewSupport.container)
     }
 }

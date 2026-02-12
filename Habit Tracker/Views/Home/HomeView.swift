@@ -16,7 +16,6 @@ struct HomeView: View {
     @Query var tasks: [TaskInstance]
     
     @State private var selectedPreset: HabitPreset?
-    @State private var showPresetSheet = false
     
     private var habits: [Habit] {
         habitsRaw
@@ -73,37 +72,19 @@ struct HomeView: View {
                 }
             }
             .background(Color.htBackground)
-            .onAppear {
-                generateTasksIfNeeded()
-            }
-        }
-    }
-    
-    //MARK: - On appear will generate tasks for today if they are not existing and save it in SwiftData
-    private func generateTasksIfNeeded() {
-        guard !habits.isEmpty else { return }
-        
-        guard let todayWeekday = Weekday(
-            rawValue: Calendar.current.component(.weekday, from: Date())
-        ) else { return }
-        
-        let today = Calendar.current.startOfDay(for: Date())
-        
-        let todayHabits = habits.filter {
-            $0.daysOfWeek.contains(todayWeekday)
-        }
-        
-        for habit in todayHabits {
-            for subtask in habit.subtasks {
-                
-                if !habit.hasTask(for: today, template: subtask) {
-                    context.insert(TaskInstance(date: today, habit: habit, template: subtask))
+            .sheet(item: $selectedPreset) { preset in
+                CreateHabitView(draft: preset.makeDraftHabit()) {
+                    selectedPreset = nil
                 }
-                
+            }
+            .onAppear {
+                TaskGenerationService.generateTodayTasksIfNeeded(
+                    habits: habitsRaw,
+                    context: context
+                )
             }
         }
     }
-    
     
     private var todayList: some View {
         VStack {
@@ -135,27 +116,16 @@ struct HomeView: View {
                     .font(.callout)
                     .fontWeight(.medium)
                     .padding(.vertical)
-                
+
                 Spacer()
-                
-                NavigationLink("See All", destination: ContentView())
-                    .font(.caption)
-                    .foregroundStyle(.primary)
             }
-            
+
             ScrollView(.horizontal) {
                 HStack {
                     ForEach(HabitPreset.mockList) { preset in
                         HabitPresetCard(preset: preset) {
                             selectedPreset = preset
-                            showPresetSheet = true
-                        }
-                    }
-                    .sheet(isPresented: $showPresetSheet) {
-                        if let selectedPreset {
-                            CreateHabitView(draft: selectedPreset.makeDraftHabit()) {
-                                showPresetSheet = false
-                            }
+
                         }
                     }
                 }

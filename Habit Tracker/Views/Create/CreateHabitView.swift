@@ -12,6 +12,7 @@ struct CreateHabitView: View {
     @Environment(\.modelContext) private var context
     @FocusState private var isInputFocused: Bool
     
+    @State private var showSubtasks = false
     @State private var showValidationError = false
     @State private var draft: Habit
     let onFinish: () -> Void
@@ -106,27 +107,28 @@ struct CreateHabitView: View {
                             .padding(.top, 6)
                     }
                     
-                    NavigationLink {
-                        HabitSubtasksEditor(habit: draft, onFinish: onFinish)
+                    Button {
+                        if canProceed {
+                            showSubtasks = true
+                        } else {
+                            showValidationError = true
+                        }
                     } label: {
                         Text("Add Subtasks")
-                            .frame(maxWidth: .infinity, maxHeight: 50)
-                            .background(canProceed ? .htMain : .gray.opacity(0.4))
+                            .frame(maxWidth: .infinity, minHeight: 50)
+                            .background(canProceed ? Color.htMain : Color.gray.opacity(0.4))
                             .foregroundStyle(.white)
                             .font(.callout.bold())
                             .clipShape(.capsule)
                     }
-                    .disabled(!canProceed)
+                    .buttonStyle(.plain)
                     .alert("Fill required fields", isPresented: $showValidationError) {
                         Button("OK", role: .cancel) {}
                     } message: {
                         Text("Please enter a title and select at least one day.")
                     }
-                    .onChange(of: canProceed) { _, newValue in
-                        if newValue { showValidationError = false }
-                    }
-                    .onTapGesture {
-                        if !canProceed { showValidationError = true }
+                    .navigationDestination(isPresented: $showSubtasks) {
+                        HabitSubtasksEditor(habit: draft, onFinish: onFinish)
                     }
                 }
                 .padding()

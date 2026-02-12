@@ -30,9 +30,11 @@ private extension HabitDetailView {
             Text(habit.title)
                 .font(.largeTitle.bold())
 
-            Text(habit.subtitle)
-                .foregroundStyle(.secondary)
-
+            let subtitle = habit.subtitle.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !subtitle.isEmpty {
+                Text(subtitle)
+                    .foregroundStyle(.secondary)
+            }
             Text(habit.daysOfWeek.shortDayList)
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -73,8 +75,10 @@ private extension HabitDetailView {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             } else {
-                ForEach(habit.subtasks) { subtask in
-                    SubtaskRow(subtask: subtask)
+                LazyVStack(spacing: 12) {
+                    ForEach(habit.subtasks) { subtask in
+                        SubtaskRow(subtask: subtask)
+                    }
                 }
             }
         }
@@ -91,7 +95,9 @@ struct SubtaskRow: View {
                     .font(.body)
 
                 if let duration = subtask.duration {
-                    Text("\(Int(duration / 60)) min")
+                    let minutes = max(1, Int(duration / 60))
+
+                    Text("\(minutes) min")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -99,9 +105,7 @@ struct SubtaskRow: View {
 
             Spacer()
 
-            Image(systemName: "chevron.right")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+
         }
         .padding()
         .background(.ultraThinMaterial)

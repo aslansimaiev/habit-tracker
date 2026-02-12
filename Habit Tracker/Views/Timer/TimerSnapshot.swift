@@ -11,7 +11,6 @@ struct TimerSnapshot: Equatable {
     let remainingSeconds: Double
     let progress: Double
 
-    /// удобно для onChange (чтобы не триггерить на каждую миллисекунду)
     let remainingSecondsRounded: Int
 
     init(task: TaskInstance, now: Date) {

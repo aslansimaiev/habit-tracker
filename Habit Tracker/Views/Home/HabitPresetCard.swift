@@ -17,6 +17,7 @@ struct HabitPresetCard: View {
                 .frame(width: 130, height: 115)
             Text(preset.title)
                 .padding(.bottom)
+                .font(.caption)
         }
         .background(.white)
         .clipShape(.rect(cornerRadius: 10))

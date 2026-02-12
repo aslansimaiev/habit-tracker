@@ -49,6 +49,7 @@ struct HabitListView: View {
             Button("Delete", role: .destructive) {
                 if let habitToDelete {
                     modelContext.delete(habitToDelete)
+                    try? modelContext.save()
                     self.habitToDelete = nil
                 }
             }
