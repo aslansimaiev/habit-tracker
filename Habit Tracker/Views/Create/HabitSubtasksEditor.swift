@@ -11,10 +11,24 @@ struct HabitSubtasksEditor: View {
     @Environment(\.modelContext) var context
     @Environment(\.dismiss) var dismiss
     @Bindable var habit: Habit
-    @FocusState private var focusedSubtaskId: UUID?
+    @FocusState private var focus: Field?
+    @State private var showSubtaskValidationError = false
+    @State private var validationMessage = ""
     
+    private var hasInvalidSubtasks: Bool {
+        habit.subtasks.contains { $0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+    }
+    
+    private var hasNoSubtasks: Bool {
+        habit.subtasks.isEmpty
+    }
+    
+    private enum Field: Hashable {
+        case title(UUID)
+        case minutes(UUID)
+    }
     let onFinish: () -> Void
-
+    
     var body: some View {
         List {
             ForEach($habit.subtasks) { $subtask in
@@ -26,26 +40,34 @@ struct HabitSubtasksEditor: View {
             
             addButton
         }
+        .scrollDismissesKeyboard(.interactively)
         .navigationTitle("Subtasks")
-        .toolbar(){
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Save") {
-                    saveHabit()
-                }
+        
+        .toolbar {
+            ToolbarItem(placement: .keyboard) {
+                Button("Done") { focus = nil }
             }
-            
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Save") { saveHabit() }
+            }
+        }
+        .alert("Can't save", isPresented: $showSubtaskValidationError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(validationMessage)
         }
     }
     
-   //MARK: - A row in the list of subtasks
+    //MARK: - A row in the list of subtasks
     private func subtaskRow(_ subtask: Binding<HabitSubtaskTemplate>) -> some View {
+        
         VStack(spacing: 0) {
             HStack(alignment: .center) {
                 // TITLE
                 TextField("Subtask title", text: subtask.title)
                     .font(.headline)
                     .textFieldStyle(.plain)
-                    .focused($focusedSubtaskId, equals: subtask.id.wrappedValue)
+                    .focused($focus, equals: .title(subtask.id.wrappedValue))
                     .padding(.vertical, 8)
                 
                 Spacer()
@@ -60,9 +82,11 @@ struct HabitSubtasksEditor: View {
                             ),
                             format: .number
                         )
+                        .focused($focus, equals: .minutes(subtask.id.wrappedValue))
                         .frame(width: 50)
                         .multilineTextAlignment(.trailing)
                         .keyboardType(.numberPad)
+                        
                         Text("min")
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -70,6 +94,7 @@ struct HabitSubtasksEditor: View {
                 } else {
                     Button {
                         subtask.duration.wrappedValue = 300
+                        focus = .minutes(subtask.id.wrappedValue)
                     } label: {
                         Text("Add timer")
                             .font(.caption)
@@ -104,7 +129,7 @@ struct HabitSubtasksEditor: View {
             
             habit.subtasks.append(newSubtask)
             
-            focusedSubtaskId = newSubtask.id
+            focus = .title(newSubtask.id)
         } label: {
             Label("Add subtask", systemImage: "plus")
         }
@@ -112,8 +137,28 @@ struct HabitSubtasksEditor: View {
     
     //MARK: - When new habit is submitted. Need to create Habit, and tasks
     func saveHabit() {
+        if hasNoSubtasks {
+            validationMessage = "Add at least one subtask."
+            showSubtaskValidationError = true
+            return
+        }
+
+        if hasInvalidSubtasks {
+            validationMessage = "Subtask title can't be empty. Fill it in or delete the subtask."
+            showSubtaskValidationError = true
+
+            // (опционально) автофокус на первый пустой
+            if let first = habit.subtasks.first(where: {
+                $0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            }) {
+                focus = .title(first.id)
+            }
+            return
+        }
+
         context.insert(habit)
-        
+        generateTodayTasks(for: habit)
+
         do {
             try context.save()
             onFinish()
@@ -122,12 +167,29 @@ struct HabitSubtasksEditor: View {
         }
     }
     
+    
+    private func generateTodayTasks(for habit: Habit) {
+        let today = Calendar.current.startOfDay(for: .now)
+        
+        let calWeekday = Calendar.current.component(.weekday, from: .now) // 1=Sun
+        let isoIndex = (calWeekday + 5) % 7 + 1 // 1=Mon ... 7=Sun
+        guard let todayWeekday = Weekday(rawValue: isoIndex) else { return }
+        
+        guard habit.daysOfWeek.contains(todayWeekday) else { return }
+        
+        for subtask in habit.subtasks {
+            if !habit.hasTask(for: today, template: subtask) {
+                context.insert(TaskInstance(date: today, habit: habit, template: subtask))
+            }
+        }
+    }
+    
 }
 
 
 
 #Preview {
-
+    
     HabitSubtasksEditor(habit: Habit(title: "", subtitle: "", totalSessions: 5, daysOfWeek: []), onFinish: {
         print("Preview: onFinish called")
     })

@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
-
 struct HabitPresetCard: View {
     let preset: HabitPreset
+    let onTap: () -> Void
+
     var body: some View {
-        VStack{
+        VStack {
             Image(preset.imageName)
                 .resizable()
                 .frame(width: 130, height: 115)
@@ -19,10 +20,13 @@ struct HabitPresetCard: View {
         }
         .background(.white)
         .clipShape(.rect(cornerRadius: 10))
-
+        .contentShape(Rectangle())
+        .onTapGesture { onTap() }
     }
 }
 
 #Preview {
-    HabitPresetCard(preset: .morningRoutine)
+    HabitPresetCard(preset: .morningRoutine, onTap: {
+        print("cool")
+    })
 }
