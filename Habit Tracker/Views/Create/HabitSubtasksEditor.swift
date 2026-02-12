@@ -12,13 +12,23 @@ struct HabitSubtasksEditor: View {
     @Environment(\.dismiss) var dismiss
     @Bindable var habit: Habit
     @FocusState private var focus: Field?
-
+    @State private var showSubtaskValidationError = false
+    @State private var validationMessage = ""
+    
+    private var hasInvalidSubtasks: Bool {
+        habit.subtasks.contains { $0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+    }
+    
+    private var hasNoSubtasks: Bool {
+        habit.subtasks.isEmpty
+    }
+    
     private enum Field: Hashable {
         case title(UUID)
         case minutes(UUID)
     }
     let onFinish: () -> Void
-
+    
     var body: some View {
         List {
             ForEach($habit.subtasks) { $subtask in
@@ -41,10 +51,16 @@ struct HabitSubtasksEditor: View {
                 Button("Save") { saveHabit() }
             }
         }
+        .alert("Can't save", isPresented: $showSubtaskValidationError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(validationMessage)
+        }
     }
     
-   //MARK: - A row in the list of subtasks
+    //MARK: - A row in the list of subtasks
     private func subtaskRow(_ subtask: Binding<HabitSubtaskTemplate>) -> some View {
+        
         VStack(spacing: 0) {
             HStack(alignment: .center) {
                 // TITLE
@@ -70,7 +86,7 @@ struct HabitSubtasksEditor: View {
                         .frame(width: 50)
                         .multilineTextAlignment(.trailing)
                         .keyboardType(.numberPad)
-
+                        
                         Text("min")
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -121,9 +137,26 @@ struct HabitSubtasksEditor: View {
     
     //MARK: - When new habit is submitted. Need to create Habit, and tasks
     func saveHabit() {
-        context.insert(habit)
+        if hasNoSubtasks {
+            validationMessage = "Add at least one subtask."
+            showSubtaskValidationError = true
+            return
+        }
 
-        // generate today tasks after habit creation
+        if hasInvalidSubtasks {
+            validationMessage = "Subtask title can't be empty. Fill it in or delete the subtask."
+            showSubtaskValidationError = true
+
+            // (опционально) автофокус на первый пустой
+            if let first = habit.subtasks.first(where: {
+                $0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            }) {
+                focus = .title(first.id)
+            }
+            return
+        }
+
+        context.insert(habit)
         generateTodayTasks(for: habit)
 
         do {
@@ -133,16 +166,17 @@ struct HabitSubtasksEditor: View {
             print("Failed to save habit:", error)
         }
     }
-
+    
+    
     private func generateTodayTasks(for habit: Habit) {
         let today = Calendar.current.startOfDay(for: .now)
-
+        
         let calWeekday = Calendar.current.component(.weekday, from: .now) // 1=Sun
         let isoIndex = (calWeekday + 5) % 7 + 1 // 1=Mon ... 7=Sun
         guard let todayWeekday = Weekday(rawValue: isoIndex) else { return }
-
+        
         guard habit.daysOfWeek.contains(todayWeekday) else { return }
-
+        
         for subtask in habit.subtasks {
             if !habit.hasTask(for: today, template: subtask) {
                 context.insert(TaskInstance(date: today, habit: habit, template: subtask))
@@ -155,7 +189,7 @@ struct HabitSubtasksEditor: View {
 
 
 #Preview {
-
+    
     HabitSubtasksEditor(habit: Habit(title: "", subtitle: "", totalSessions: 5, daysOfWeek: []), onFinish: {
         print("Preview: onFinish called")
     })

@@ -11,7 +11,8 @@ struct CreateHabitView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
     @FocusState private var isInputFocused: Bool
-
+    
+    @State private var showValidationError = false
     @State private var draft: Habit
     let onFinish: () -> Void
 
@@ -22,7 +23,12 @@ struct CreateHabitView: View {
         _draft = State(initialValue: draft)
         self.onFinish = onFinish
     }
-
+    
+    private var trimmedTitle: String { draft.title.trimmingCharacters(in: .whitespacesAndNewlines) }
+    private var isTitleValid: Bool { !trimmedTitle.isEmpty }
+    private var areDaysValid: Bool { !draft.daysOfWeek.isEmpty }
+    private var canProceed: Bool { isTitleValid && areDaysValid }
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -32,13 +38,18 @@ struct CreateHabitView: View {
 
                 VStack(alignment: .leading) {
                     Text("Set a Goal")
+                    
                     TextField("Eg. Make Mediation Daily Habit!", text: $draft.title)
                         .focused($isInputFocused)
                         .padding(12)
                         .background(Color.white)
                         .cornerRadius(8)
                         .padding(.bottom)
-
+                    if !isTitleValid {
+                        Text("Title is required.")
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
                     Text("Set a subtitle (optional)")
                         .font(.system(size: 14))
 
@@ -66,7 +77,7 @@ struct CreateHabitView: View {
                             .foregroundStyle(.secondary)
                     }
                     .padding(.vertical)
-
+                    
                     HStack {
                         ForEach(Weekday.allCases, id: \.self) { day in
                             Button { toggle(day) } label: {
@@ -88,18 +99,35 @@ struct CreateHabitView: View {
                             .buttonStyle(.plain)
                         }
                     }
-
+                    if !areDaysValid {
+                        Text("Select at least one day.")
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                            .padding(.top, 6)
+                    }
+                    
                     NavigationLink {
                         HabitSubtasksEditor(habit: draft, onFinish: onFinish)
                     } label: {
                         Text("Add Subtasks")
                             .frame(maxWidth: .infinity, maxHeight: 50)
-                            .background(.htMain)
+                            .background(canProceed ? .htMain : .gray.opacity(0.4))
                             .foregroundStyle(.white)
                             .font(.callout.bold())
                             .clipShape(.capsule)
                     }
-                    .padding(.vertical)
+                    .disabled(!canProceed)
+                    .alert("Fill required fields", isPresented: $showValidationError) {
+                        Button("OK", role: .cancel) {}
+                    } message: {
+                        Text("Please enter a title and select at least one day.")
+                    }
+                    .onChange(of: canProceed) { _, newValue in
+                        if newValue { showValidationError = false }
+                    }
+                    .onTapGesture {
+                        if !canProceed { showValidationError = true }
+                    }
                 }
                 .padding()
             }
