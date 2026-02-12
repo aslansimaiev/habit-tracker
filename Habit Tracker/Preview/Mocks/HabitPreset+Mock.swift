@@ -9,7 +9,7 @@ import Foundation
 
 extension HabitPreset {
 
-    // 1) Morning Routine (будни)
+    // 1) Morning Routine 
     static let morningRoutine = HabitPreset(
         title: "Morning Routine",
         subtitle: "Start your day right",
@@ -23,7 +23,7 @@ extension HabitPreset {
         ]
     )
 
-    // 2) Evening Wind Down (ежедневно)
+    // 2) Evening Wind Down
     static let eveningWindDown = HabitPreset(
         title: "Evening Wind Down",
         subtitle: "Relax before sleep",
@@ -37,7 +37,7 @@ extension HabitPreset {
         ]
     )
 
-    // 3) Deep Work Block (будни)
+    // 3) Deep Work Block
     static let deepWork = HabitPreset(
         title: "Deep Work",
         subtitle: "One focused block a day",
@@ -51,7 +51,7 @@ extension HabitPreset {
         ]
     )
 
-    // 4) Workout (3 раза в неделю)
+    // 4) Workout
     static let workout = HabitPreset(
         title: "Workout",
         subtitle: "Move your body",
@@ -65,7 +65,7 @@ extension HabitPreset {
         ]
     )
 
-    // 5) Home Reset (выходные)
+    // 5) Home Reset
     static let homeReset = HabitPreset(
         title: "Weekend Home Reset",
         subtitle: "Clean, plan, reset",

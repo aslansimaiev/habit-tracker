@@ -147,7 +147,6 @@ struct HabitSubtasksEditor: View {
             validationMessage = "Subtask title can't be empty. Fill it in or delete the subtask."
             showSubtaskValidationError = true
 
-            // (опционально) автофокус на первый пустой
             if let first = habit.subtasks.first(where: {
                 $0.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             }) {

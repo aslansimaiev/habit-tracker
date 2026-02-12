@@ -9,17 +9,13 @@ import Foundation
 extension Habit {
 
     static func mock() -> Habit {
-        // 1️⃣ создаём только Habit
+
         let habit = Habit(
             title: "Morning Routine",
             subtitle: "Improve my mornings",
             totalSessions: 15,
             daysOfWeek: [.monday, .tuesday, .wednesday, .thursday, .friday]
         )
-        
-
-        // ⚠️ сабтаски добавляем ПОСЛЕ вставки Habit в context
-        // habit.subtasks.append(...) делаем только после вставки в Preview
 
         return habit
     }
