@@ -42,7 +42,8 @@ Statistics
 <img width="3840" height="2160" alt="statistics" src="https://github.com/user-attachments/assets/0128590d-c85b-41d7-8d35-e35a1db47e3a" />
 
 Task Execution
-https://github.com/user-attachments/assets/e6acd9b0-265f-43db-b458-54e0fbb33455
+
+https://github.com/user-attachments/assets/f124eef3-aacb-4682-ae29-bb5219c9c7e2
 
 # Architecture
 
