@@ -138,9 +138,6 @@ struct HomeView: View {
                 
                 Spacer()
                 
-                NavigationLink("See All", destination: ContentView())
-                    .font(.caption)
-                    .foregroundStyle(.primary)
             }
             
             ScrollView(.horizontal) {
