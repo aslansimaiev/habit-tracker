@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct Habit_TrackerApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(\.colorScheme, .light) 
+                .modelContainer(for: [Habit.self, HabitSubtaskTemplate.self, TaskInstance.self])
         }
     }
 }
